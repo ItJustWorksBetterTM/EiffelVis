@@ -13,6 +13,7 @@ use lapin::{options::*, BasicProperties, Connection, ConnectionProperties, types
 use clap::Parser;
 use rand::{thread_rng, Rng};
 
+
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
 struct Cli {
@@ -82,7 +83,8 @@ async fn app() -> anyhow::Result<()> {
 
         // println!(?queue, "Declared queue");
     println!("Connected to broker.");
-
+    let typeArray = ["Event1","Event2","Event3","Event4","Event5"];
+    
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
         4,
@@ -91,7 +93,7 @@ async fn app() -> anyhow::Result<()> {
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-                Event::new("Event", "1.0.0")
+                Event::new(typeArray[rand::thread_rng().gen_range(0..4)] , "1.0.0")
                     .with_link("Link0")
                     .with_link("Link1"),
             )
