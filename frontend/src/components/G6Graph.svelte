@@ -115,6 +115,11 @@
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
+         //TODO : Add a listener when entering and exiting the nodes
+         graph.on("node:mouseenter", (e) => dispatch("nodeHovered", e));  // emit an event when the node is entered with the mouse
+
+         graph.on("node:mouseout", (e) => dispatch("nodeExited", e));      // emit an event when the node is exited with the mouse.
+
         graph.changeData(data);
         resizeGraph();
 
