@@ -87,13 +87,13 @@ async fn app() -> anyhow::Result<()> {
 
     let channel_a = conn.create_channel().await?;
 
-    let queue = channel_a
-            .queue_declare(
-                "hello",
-                QueueDeclareOptions::default(),
-                FieldTable::default(),
-            )
-            .await?;
+    channel_a
+        .queue_declare(
+            "hello",
+            QueueDeclareOptions::default(),
+            FieldTable::default(),
+        )
+        .await?;
 
         // println!(?queue, "Declared queue");
     println!("Connected to broker.");
