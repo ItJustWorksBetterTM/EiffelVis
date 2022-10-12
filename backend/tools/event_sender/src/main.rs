@@ -73,7 +73,7 @@ async fn app() -> anyhow::Result<()> {
 
     let channel_a = conn.create_channel().await?;
 
-    let queue = channel_a
+    channel_a
             .queue_declare(
                 "hello",
                 QueueDeclareOptions::default(),
@@ -83,7 +83,7 @@ async fn app() -> anyhow::Result<()> {
 
         // println!(?queue, "Declared queue");
     println!("Connected to broker.");
-    let typeArray = ["Event1","Event2","Event3","Event4","Event5"];
+    let type_array = ["Event1","Event2","Event3","Event4","Event5"];
     
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
