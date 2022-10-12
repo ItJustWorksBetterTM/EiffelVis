@@ -1,4 +1,3 @@
-
 export interface GraphSettings {
   offset: number
   time_diff: number
@@ -16,8 +15,6 @@ export class StatefulLayout {
   private curve = 0
   private curveSep = 0
   private colors = new Map<string, string>()
-  private shapes = new Map<string, string>()
-  private shapeArray = ["circle", "rect", "ellipse", "diamond", "star"]
 
   apply(node: any, graphOptions: GraphSettings) {
     if (this.curve === 0 && graphOptions.offset) {
@@ -29,15 +26,7 @@ export class StatefulLayout {
       lineWidth: 0.4,
     }
     node.size = 10
-    node.type = this.nodeShape(node.event_type)
-    node.label = node.event_type
-    node.labelCfg = {
-      style: {
-        fill: '#9254de',
-        fontSize: 10,
-      },
-      position: 'right',
-    }
+
     const temp = node
     const tempTime: number = temp.time
     if (tempTime <= this.timee + graphOptions.time_diff) {
@@ -65,15 +54,6 @@ export class StatefulLayout {
       this.timee = tempTime
     }
   }
-  nodeShape(eventType: string) {
-    // if a new event type are created, we generate a random integer between 0-4 as the index of shape array.
-    if (!this.shapes.has(eventType)) {
-      const shape = this.shapeArray[Math.floor(Math.random() * this.shapeArray.length)]
-      console.log(shape)
-      this.shapes.set(eventType, shape)
-    }
-    return this.shapes.get(eventType)
-  }
 
   nodeColor(eventType: string, hue?: number) {
     if (!this.colors.has(eventType)) {
@@ -85,10 +65,6 @@ export class StatefulLayout {
       this.colors.set(eventType, color)
     }
     return this.colors.get(eventType)
-  }
-  // return the shape of node
-  getNodeShape() {
-    return this.shapes
   }
 
   getNodeColor() {
