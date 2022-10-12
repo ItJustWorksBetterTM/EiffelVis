@@ -8,11 +8,10 @@ use eiffelvis_gen::{
     event_set::{Event, EventSet, Link},
     generator::EventGenerator,
 };
-use lapin::{options::*, BasicProperties, Connection, ConnectionProperties, types::FieldTable};
+use lapin::{options::*, types::FieldTable, BasicProperties, Connection, ConnectionProperties};
 
 use clap::Parser;
 use rand::{thread_rng, Rng};
-
 
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
@@ -30,7 +29,7 @@ struct Cli {
     exchange: String,
 
     /// Routing key used for ampq connections
-    #[clap(default_value="hello",short, long)]
+    #[clap(default_value = "hello", short, long)]
     routing_key: String,
 
     /// Random seed used to create event data
@@ -74,17 +73,17 @@ async fn app() -> anyhow::Result<()> {
     let channel_a = conn.create_channel().await?;
 
     channel_a
-            .queue_declare(
-                "hello",
-                QueueDeclareOptions::default(),
-                FieldTable::default(),
-            )
-            .await?;
+        .queue_declare(
+            "hello",
+            QueueDeclareOptions::default(),
+            FieldTable::default(),
+        )
+        .await?;
 
-        // println!(?queue, "Declared queue");
+    // println!(?queue, "Declared queue");
     println!("Connected to broker.");
-    let type_array = ["Event1","Event2","Event3","Event4","Event5"];
-    
+    let type_array = ["Event1", "Event2", "Event3", "Event4", "Event5"];
+
     let gen = EventGenerator::new(
         cli.seed.unwrap_or_else(|| thread_rng().gen::<usize>()),
         4,
@@ -93,7 +92,7 @@ async fn app() -> anyhow::Result<()> {
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-                Event::new(type_array[rand::thread_rng().gen_range(0..4)] , "1.0.0")
+                Event::new(type_array[rand::thread_rng().gen_range(0..4)], "1.0.0")
                     .with_link("Link0")
                     .with_link("Link1"),
             )
