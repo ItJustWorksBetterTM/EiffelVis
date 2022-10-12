@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["app","Contains [EiffelGraph] and implements some special operations for it"],["types","Eiffel Event types"],["user_queries","Query types and functions to acquire specific data from an [EiffelGraph]"]]};

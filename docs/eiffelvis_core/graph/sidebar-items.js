@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["Graph","Main graph trait"],["HasNode",""],["HasNodeIter",""],["HasNodeRangeIter",""],["Idx",""],["Indexable",""],["Item",""],["ItemEdge",""],["ItemIter",""],["Key",""],["Meta","Meta graph trait, defines the base types of a graph such as key and data types"]],"type":[["NodeIterType",""],["NodeRangeIterType",""],["NodeType",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["algorithms","Graph traversal algorithms"],["domain","eiffelvis domains specicifc api"],["graph","Graph traits"],["graph_storage","DAG storage implementations"],["query","Generic graph query functionality"],["tracked_query","Generic tracked graph query functionality"]]};

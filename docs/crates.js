@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["eiffelvis","eiffelvis_core","eiffelvis_gen","eiffelvis_http","eiffelvis_stream","event_sender"];
