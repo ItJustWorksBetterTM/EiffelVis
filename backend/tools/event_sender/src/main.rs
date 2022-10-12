@@ -93,7 +93,7 @@ async fn app() -> anyhow::Result<()> {
             .add_link(Link::new("Link0", true))
             .add_link(Link::new("Link1", true))
             .add_event(
-                Event::new(typeArray[rand::thread_rng().gen_range(0..4)] , "1.0.0")
+                Event::new(type_array[rand::thread_rng().gen_range(0..4)] , "1.0.0")
                     .with_link("Link0")
                     .with_link("Link1"),
             )
