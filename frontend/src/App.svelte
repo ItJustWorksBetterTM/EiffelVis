@@ -186,9 +186,9 @@
     workerEnabled: false,
     fitView: true,
     defaultEdge: {
-      label: "label",
       labelCfg: {
-      autoRotate: false,
+      position: 'middle' // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+    },
       style: {
         fill: '#fff',
         position: "middle",
