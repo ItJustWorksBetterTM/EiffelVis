@@ -113,17 +113,13 @@
   width: 10,
   height: 8,
   // the types of items that allow the tooltip show up
-  itemTypes: ['node', 'edge'],
+  itemTypes: ['node'],
   // custom the tooltip's content
   getContent: (e) => {
     const outDiv = document.createElement('div'); // create a new div to contain the info within the tootip. 
 
     if (e.item.getType() === 'node') {
         outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
-    }else{
-
-        //outDiv.innerHTML = `source：${source.getModel().name}<br/>target：${target.getModel().name}`;
-        outDiv.innerHTML = `<h4>`+ getLinkType(e) +`</h4>`; 
     }
         return outDiv;
   },
@@ -135,20 +131,16 @@
     return time.toLocaleTimeString();            // return the converted date to local time with a precision to the second. 
   }
 
-  const getLinkType = (e: any) => {
-    const source = e.item.getSource(); 
-    const target = e.item.getTarget();
-    let type = e.item.getSource();
-    return type;            //  and return it
-  }
 
-  const clearAllStats = (e: any) =>{
+  const clearAllStates = (e: any) =>{
     graph.getNodes().forEach(function (node) {
     graph.clearItemStates(node);
     });
-    graph.getEdges().forEach(function (edge) {
-    graph.clearItemStates(edge);
-    });
+    // this was causing an error  
+    //graph.getEdges().forEach(function (edge) { 
+    //graph.clearItemStates(edge);
+   // });
+    graph.paint();
   }
 
   onMount(() => {
@@ -161,7 +153,7 @@
       container,
       plugins: [tooltip]  // add tooltip as plugin to the graph. 
     });
-
+    
     graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
 
     // Listeners that emit when the node is hovered by the mouse. These listeners are here in case we need to query the DB for retreiving more information from the backend to display in the tooltip 
@@ -174,6 +166,7 @@
         graph.getNodes().forEach(function (node) {
             graph.clearItemStates(node);
             graph.setItemState(node, 'dark', true);
+            graph.setItemState(node, 'hover', true); //to have the hover effect fully functioning
         });
         graph.setItemState(item, 'dark', false);
         graph.setItemState(item, 'highlight', true);
@@ -182,26 +175,63 @@
             graph.setItemState(edge.getTarget(), 'dark', false);
             graph.setItemState(edge.getTarget(), 'highlight', true);
             graph.setItemState(edge, 'highlight', true);
-            graph.setItemState(edge, 'selected', true);
+            graph.setItemState(edge, 'dark', false);         
             edge.toFront();
             } else if (edge.getTarget() === item) {
             graph.setItemState(edge.getSource(), 'dark', false);
             graph.setItemState(edge.getSource(), 'highlight', true);
+            graph.setItemState(edge, 'dark', false);
             graph.setItemState(edge, 'highlight', true);
-            graph.setItemState(edge, 'selected', true);
             edge.toFront();
             } else {
             graph.setItemState(edge, 'highlight', false);
-            graph.setItemState(edge, 'selected', false);
+            graph.setItemState(edge, 'dark', true);
             }
+             graph.updateItem(edge, {
+                stateStyles:{
+                    highlight:{
+                        'edge-label': {
+                            opacity: 1
+                        }
+                    },
+                    dark:{
+                        'edge-label': {
+                            opacity: 0
+                        }
+                    }
+            }} 
+        )//end of updateItem
+    });
+});
+      
+graph.on('node:mouseleave', clearAllStates);
+graph.on('canvas:click', clearAllStates);
+graph.on("node:mouseleave", (e) => {
+    graph.getNodes().forEach(function (node) {
+            graph.clearItemStates(node);
+            graph.setItemState(node, 'dark', true);
+            graph.setItemState(node, 'hover', false); //to have the hover effect fully functioning
         });
-
-    });
-    graph.on('node:mouseleave', clearAllStats); //test
-    graph.on("node:mouseleave", (e) => {
-      graph.setItemState(e.item, "active", false);
-    });
-
+      graph.clearItemStates(e.item);
+      graph.getEdges().forEach(function (edge) {
+      //  graph.clearItemStates(edge);
+      graph.updateItem(edge, {
+                stateStyles:{
+                    highlight:{
+                        labelCfg:{ 
+                            opacity: 0
+                        }
+                    },
+                    dark:{
+                        'label':{ // this should be like this.  when I changed it, it got buggy
+                            opacity: 0
+                        }
+                }
+            }
+        } 
+        )//end of updateItem
+        });
+     });
 
     graph.changeData(data);
     resizeGraph();
@@ -217,6 +247,7 @@
       graph.changeData(data);
     }
   }
+  reset();
 
 </script>
 
