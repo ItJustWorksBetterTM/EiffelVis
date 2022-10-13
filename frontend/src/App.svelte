@@ -1,6 +1,6 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-  import G6 from "@antv/g6";
+  import G6, { Edge } from "@antv/g6";
   import { QueryStream, EiffelVisConnection } from "./eiffelvis";
   import { GraphSettings, StatefulLayout } from "./layout";
   import QueryForm from "./components/QueryForm.svelte";
@@ -186,15 +186,37 @@
     workerEnabled: false,
     fitView: true,
     defaultEdge: {
+      label: "label",
+      labelCfg: {
+      autoRotate: false,
       style: {
+        fill: '#fff',
+        position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
       },
     },
+    },
     nodeStateStyles: {
+      active:{
+        
+      },
       selected: {
         fill: "#ffffff",
         lineWidth: 0.4,
       },
+
+    },
+    edgeStateStyles: {
+      active: {
+        
+        
+      },
+      selected: {
+        
+        label: "sel",
+        
+      },
+      
     },
     modes: {
       default: [
@@ -204,6 +226,11 @@
           type: "zoom-canvas",
           enableOptimize: true,
         },
+        {
+          type: 'activate-relations', //hightlights all the relations, used for hover effect
+           resetSelected: true,
+
+        }
       ],
     },
   };

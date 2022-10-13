@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Graph, GraphData } from "@antv/g6";
+  import G6, { Edge, Graph, GraphData } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
@@ -38,10 +38,11 @@
   };
 
   export const push = (ev: any) => {
+    console.log(ev);
     ev.date = String(ev.time);
     graph.addItem("node", ev, false, false);
-    for (const target of ev.edges) {
-      graph.addItem("edge", { source: ev.id, target });
+    for (const edge of ev.edges) {
+      graph.addItem("edge", { source: ev.id, target: edge.target, label: edge.label });
     }
 
     timeBarData.push({
@@ -112,25 +113,19 @@
   width: 10,
   height: 8,
   // the types of items that allow the tooltip show up
-  itemTypes: ['node'],
+  itemTypes: ['node', 'edge'],
   // custom the tooltip's content
   getContent: (e) => {
     const outDiv = document.createElement('div'); // create a new div to contain the info within the tootip. 
-     // style the content
-    /* outDiv.classList.add("g6tooltip") //to link it to the style class but did not work
-    outDiv.style.backgroundColor = 'rgba(248,248,240, 0.7)';  
-    outDiv.style.borderRadius= '13px'
-    outDiv.style.alignContent = 'centre'
-    outDiv.style.borderColor= 'rgb(106, 90, 205)';
-    outDiv.style.borderWidth= '2px'
-    outDiv.style.padding = '12px 5px 4px 12px';
-    outDiv.style.boxShadow= 'rgb(106, 90, 205) 2px 4px 12px';
-    outDiv.style.height = '60px'; 
-    outDiv.style.width = '100px'; 
-    outDiv.style.textShadow='2px 2px #6a5acd'         
-    outDiv.style.color = '#fff' */
-    outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
-    return outDiv;
+
+    if (e.item.getType() === 'node') {
+        outDiv.innerHTML = `<h4>`+ getNodeLocalTime(e) +`</h4>`; //TODO: only works for nodes. Should differenciate types of item (node or edge and give different info. Problem: edges don't contain causes ATM)
+    }else{
+
+        //outDiv.innerHTML = `source：${source.getModel().name}<br/>target：${target.getModel().name}`;
+        outDiv.innerHTML = `<h4>`+ getLinkType(e) +`</h4>`; 
+    }
+        return outDiv;
   },
 });
 
@@ -138,6 +133,22 @@
   const getNodeLocalTime = (e: any) => {
     let time = new Date(e.item._cfg.model.time); // create a new date from the timestamp in the node
     return time.toLocaleTimeString();            // return the converted date to local time with a precision to the second. 
+  }
+
+  const getLinkType = (e: any) => {
+    const source = e.item.getSource(); 
+    const target = e.item.getTarget();
+    let type = e.item.getSource();
+    return type;            //  and return it
+  }
+
+  const clearAllStats = (e: any) =>{
+    graph.getNodes().forEach(function (node) {
+    graph.clearItemStates(node);
+    });
+    graph.getEdges().forEach(function (edge) {
+    graph.clearItemStates(edge);
+    });
   }
 
   onMount(() => {
@@ -158,9 +169,35 @@
     graph.on("node:mouseout", (e) => dispatch("nodeExited", e)); // emit an event when the node is exited with the mouse.
 
     // Listeners that highlight the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => {
-      graph.setItemState(e.item, "active", true);
+    graph.on("node:mouseenter", (e) => { //test
+        const item = e.item;
+        graph.getNodes().forEach(function (node) {
+            graph.clearItemStates(node);
+            graph.setItemState(node, 'dark', true);
+        });
+        graph.setItemState(item, 'dark', false);
+        graph.setItemState(item, 'highlight', true);
+        graph.getEdges().forEach(function (edge) {
+            if (edge.getSource() === item) {
+            graph.setItemState(edge.getTarget(), 'dark', false);
+            graph.setItemState(edge.getTarget(), 'highlight', true);
+            graph.setItemState(edge, 'highlight', true);
+            graph.setItemState(edge, 'selected', true);
+            edge.toFront();
+            } else if (edge.getTarget() === item) {
+            graph.setItemState(edge.getSource(), 'dark', false);
+            graph.setItemState(edge.getSource(), 'highlight', true);
+            graph.setItemState(edge, 'highlight', true);
+            graph.setItemState(edge, 'selected', true);
+            edge.toFront();
+            } else {
+            graph.setItemState(edge, 'highlight', false);
+            graph.setItemState(edge, 'selected', false);
+            }
+        });
+
     });
+    graph.on('node:mouseleave', clearAllStats); //test
     graph.on("node:mouseleave", (e) => {
       graph.setItemState(e.item, "active", false);
     });
@@ -172,6 +209,7 @@
     return () => {
       graph.destroy();
     };
+ 
   });
 
   $: {
@@ -179,6 +217,7 @@
       graph.changeData(data);
     }
   }
+
 </script>
 
 <svelte:window on:resize={resizeGraph} />
