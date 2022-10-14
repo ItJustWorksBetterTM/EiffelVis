@@ -9,11 +9,11 @@ use eiffelvis_gen::{
     event_set::{Event, EventSet, Link},
     generator::EventGenerator,
 };
-use lapin::{options::*, BasicProperties, Connection, ConnectionProperties, types::FieldTable};
+
+use lapin::{options::*, types::FieldTable, BasicProperties, Connection, ConnectionProperties};
 
 use clap::Parser;
 use rand::{thread_rng, Rng};
-
 
 #[derive(Parser)]
 #[clap(about = "Generates random events and sends them over ampq")]
@@ -40,7 +40,8 @@ struct Cli {
     exchange: String,
 
     /// Routing key used for ampq connections
-    #[clap(default_value="hello",short, long)]
+
+    #[clap(default_value = "hello", short, long)]
     routing_key: String,
 
     /// Random seed used to create event data
