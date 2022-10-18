@@ -1,0 +1,19 @@
+# This workflow files purpose is to make sure that Backend CI passes when no files in its original path are changed
+
+name: Backend CI
+
+on:
+  push:
+    paths-ignore:
+      - "backend/**"
+      - ".github/**"
+  pull_request:
+    paths-ignore:
+      - "backend/**"
+      - ".github/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No build required" '

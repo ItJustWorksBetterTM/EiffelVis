@@ -1,10 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import G6, { Graph, GraphData } from "@antv/g6";
+    import G6, { Graph, GraphData, IG6GraphEvent } from "@antv/g6";
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
+
+    const graph_translation = 50;
 
     export let options = {};
     export let data = {};
@@ -21,13 +23,15 @@
         dispatch("nodeselected", null);
     };
 
+    // This is a hack to get the graph to render properly
+    // and not be cut off prematurely in width
     export const resizeGraph = () => {
         if (graph && container) {
             const width = Number(
-                window.getComputedStyle(container).width.replace("px", "")
+                window.innerWidth
             );
             const height = Number(
-                window.getComputedStyle(container).height.replace("px", "")
+                window.innerHeight
             );
             graph.changeSize(width, height);
         }
@@ -114,6 +118,19 @@
         });
 
         graph.on("nodeselectchange", (e) => dispatch("nodeselected", e));
+
+        // Enable keyboard manipulation
+        graph.on("keydown", (e: IG6GraphEvent) => {
+            if (e.key === "ArrowRight") {
+                graph.translate(-graph_translation, 0);
+            } else if (e.key === "ArrowLeft") {
+                graph.translate(graph_translation, 0);
+            } else if (e.key === "ArrowUp") {
+                graph.translate(0, graph_translation);
+            } else if (e.key === "ArrowDown") {
+                graph.translate(0, -graph_translation);
+            }
+        })
 
         graph.changeData(data);
         resizeGraph();
