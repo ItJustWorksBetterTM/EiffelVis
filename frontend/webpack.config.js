@@ -78,6 +78,8 @@ module.exports = {
 	devtool: prod ? false : 'source-map',
 	devServer: {
 		hot: true,
-		host: 'betong.serveminecraft.net'
+		allowedHosts: [
+			'betong.serveminecraft.net'
+		]
 	}
 };
