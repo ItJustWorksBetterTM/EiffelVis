@@ -79,7 +79,7 @@ module.exports = {
 	devServer: {
 		hot: true,
 		allowedHosts: [
-			'eiffelvis.ddns.net'
+			'betong.serveminecraft.net'
 		]
 	}
 };
