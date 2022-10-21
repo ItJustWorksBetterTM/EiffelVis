@@ -90,9 +90,13 @@ If you would like to read more about the algorithm used by EiffelVis, please see
 
 Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
 
-# set-up instruction
+# Testing
 
-1. pull all the code from test-running branch
-2. install a rabbitMQ broker(server) locally at localhost:5672(you can follow the guide from RabbitMQ docker installation instruction). And run the RabbitMQ server.
-3. start eiffelvis frontend and backend with the code on test-running branch.
-4. go to the fold /backend/tools/event_sender, run cargo run commend. It will generate 3 mock event on every run, now you should have the nodes/graph updated in your frontend.
+TODO
+
+# Set-up Instruction
+
+1. Pull all of the code from test-running branch.
+2. Install a rabbitMQ broker(server) locally at localhost:5672(you can follow the guide from the RabbitMQ docker installation instruction). Run the RabbitMQ server.
+3. Start Eiffelvis frontend and backend with the code on test-running branch.
+4. Go to the folder /backend/tools/event_sender, run the cargo run command. Be default, it will generate 3 mock events on every run. Now you should have the nodes/graph updated in your frontend.
