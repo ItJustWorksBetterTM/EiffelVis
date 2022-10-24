@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Edge, Graph, GraphData } from "@antv/g6";
+  import G6, { Edge, Graph, GraphData, Node } from "@antv/g6"; 
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
@@ -162,76 +162,27 @@
 
     // Listeners that highlight the nodes when they are hovered.
     graph.on("node:mouseenter", (e) => { //test
-        const item = e.item;
-        graph.getNodes().forEach(function (node) {
-            graph.clearItemStates(node);
-            graph.setItemState(node, 'dark', true);
-            graph.setItemState(node, 'hover', true); //to have the hover effect fully functioning
+      const item = e.item;
+      if(item instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+        graph.updateItem(item, {
+          //update the node here (ref to doc for styling) 
         });
-        graph.setItemState(item, 'dark', false);
-        graph.setItemState(item, 'highlight', true);
-        graph.getEdges().forEach(function (edge) {
-            if (edge.getSource() === item) {
-            graph.setItemState(edge.getTarget(), 'dark', false);
-            graph.setItemState(edge.getTarget(), 'highlight', true);
-            graph.setItemState(edge, 'highlight', true);
-            graph.setItemState(edge, 'dark', false);         
-            edge.toFront();
-            } else if (edge.getTarget() === item) {
-            graph.setItemState(edge.getSource(), 'dark', false);
-            graph.setItemState(edge.getSource(), 'highlight', true);
-            graph.setItemState(edge, 'dark', false);
-            graph.setItemState(edge, 'highlight', true);
-            edge.toFront();
-            } else {
-            graph.setItemState(edge, 'highlight', false);
-            graph.setItemState(edge, 'dark', true);
+        const edges = item.getEdges();
+        edges.forEach(edge => {
+          graph.updateItem(edge, {
+            // update edges here
+            labelCfg: {
+              style: {
+                opacity:1
+              }
             }
-             graph.updateItem(edge, {
-                stateStyles:{
-                    highlight:{
-                        'edge-label': {
-                            opacity: 1
-                        }
-                    },
-                    dark:{
-                        'edge-label': {
-                            opacity: 0
-                        }
-                    }
-            }} 
-        )//end of updateItem
-    });
+          });
+        });
+      }
 });
+
+  // add on mouseleave listener
       
-graph.on('node:mouseleave', clearAllStates);
-graph.on('canvas:click', clearAllStates);
-graph.on("node:mouseleave", (e) => {
-    graph.getNodes().forEach(function (node) {
-            graph.clearItemStates(node);
-            graph.setItemState(node, 'dark', true);
-            graph.setItemState(node, 'hover', false); //to have the hover effect fully functioning
-        });
-      graph.clearItemStates(e.item);
-      graph.getEdges().forEach(function (edge) {
-      //  graph.clearItemStates(edge);
-      graph.updateItem(edge, {
-                stateStyles:{
-                    highlight:{
-                        labelCfg:{ 
-                            opacity: 0
-                        }
-                    },
-                    dark:{
-                        'label':{ // this should be like this.  when I changed it, it got buggy
-                            opacity: 0
-                        }
-                }
-            }
-        } 
-        )//end of updateItem
-        });
-     });
 
     graph.changeData(data);
     resizeGraph();
