@@ -187,8 +187,7 @@
     fitView: true,
     defaultEdge: {
       labelCfg: {
-        refY: 3,
-        position: 'left', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
+        position: 'center', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
         style:{
           fill: '#ffffff',
           opacity: 0, 
@@ -196,6 +195,8 @@
         }
     },
       style: {
+        lineWidth: 1, 
+        opacity: 0.15,
         fill: '#fff',
         position: "middle",
         endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
@@ -209,11 +210,6 @@
           type: "zoom-canvas",
           enableOptimize: true,
         },
-        {
-          type: 'activate-relations', //hightlights all the relations, used for hover effect
-           resetSelected: true,
-
-        }
       ],
     }
   };

@@ -1,10 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Edge, Graph, GraphData, Node } from "@antv/g6"; 
+  import G6, { Edge, Graph, GraphData, IG6GraphEvent, Node } from "@antv/g6"; 
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
+
   const dispatch = createEventDispatcher();
+
+  const graph_translation = 50;
 
   export let options = {};
   export let data = {};
@@ -21,21 +24,23 @@
     dispatch("nodeselected", null);
   };
 
-  export const resizeGraph = () => {
-    if (graph && container) {
-      const width = Number(
-        window.getComputedStyle(container).width.replace("px", "")
-      );
-      const height = Number(
-        window.getComputedStyle(container).height.replace("px", "")
-      );
-      graph.changeSize(width, height);
-    }
-  };
+    // This is a hack to get the graph to render properly
+    // and not be cut off prematurely in width
+    export const resizeGraph = () => {
+        if (graph && container) {
+            const width = Number(
+                window.innerWidth
+            );
+            const height = Number(
+                window.innerHeight
+            );
+            graph.changeSize(width, height);
+        }
+    };
 
-  export const focusNode = (id: any) => {
-    graph.focusItem(id);
-  };
+    export const focusNode = (id: any) => {
+        graph.focusItem(id);
+    };
 
   export const push = (ev: any) => {
     ev.date = String(ev.time);
@@ -107,8 +112,8 @@
   // doc: https://g6.antv.vision/en/examples/tool/tooltip#tooltipPlugin 
   const tooltip = new G6.Tooltip({
   className: "g6tooltip",
-  offsetX: 10,
-  offsetY: 10,
+  offsetX: -30,
+  offsetY: -28,
   width: 10,
   height: 8,
   // the types of items that allow the tooltip show up
@@ -148,47 +153,78 @@
     graph.on("node:mouseout", (e) => dispatch("nodeExited", e)); // emit an event when the node is exited with the mouse.
 
     // Listeners that highlight the nodes when they are hovered.
-    graph.on("node:mouseenter", (e) => {
-      const node = e.item;
-      if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
-        const edges = node.getEdges();
-        edges.forEach(edge => {
-          graph.updateItem(edge, { //update the edges of the node 
-            labelCfg: {
-              style: {
-                opacity:1 // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+      graph.on("node:mouseenter", (e) => {
+        const node = e.item;
+        if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+          const edges = node.getEdges();
+          edges.forEach(edge => {
+            graph.updateItem(edge, { //update the edges of the node 
+              labelCfg: {
+                style: {
+                  background: { //there is a problem with this atm: it only works for the first time we hover on it. There is no way to set the background to none when  the mouse leaves the node. //TODO
+                    fill: '#151517',
+                    padding: [3, 2, 3, 2],
+                    radius: 2,
+                    lineWidth: 10,
+                    },
+                  fontSize: 12,
+                  fill: '#ffffff',
+                  opacity:1, // change the opacity to 1(make it visible), as the defualt opacity is set to 0(invisible).
+                  
+                }
+              }, 
+              style:{
+                lineWidth: 2, 
+                opacity: 1
               }
-            }
+
+            });
           });
-        });
-      }
-});
+        }
+  })
 
-graph.on("node:mouseleave", (e) => {
-  const node = e.item;
-  if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
-        const edges = node.getEdges();
-        edges.forEach(edge => {
-          graph.updateItem(edge, {
-            labelCfg: {
-              style: {
-                opacity:0 // make the link lable invisible again, as the mouse moves away from the node
-              }
-            }
+  graph.on("node:mouseleave", (e) => {
+    const node = e.item;
+    if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
+          const edges = node.getEdges();
+          edges.forEach(edge => {
+            graph.updateItem(edge, {
+              labelCfg: {
+                style: {
+                  opacity:0 // make the link lable invisible again, as the mouse moves away from the node
+                }
+              }, 
+              style:{
+                lineWidth: 1, 
+                opacity: 0.15
+              },
+            
+            });
           });
-        });
-      }
+        }
 
-});
-      
-
+  });
+     
     graph.changeData(data);
-    resizeGraph();
+    resizeGraph(); 
+
+        // Enable keyboard manipulation
+  graph.on("keydown", (e: IG6GraphEvent) => {
+            if (e.key === "ArrowRight") {
+                graph.translate(-graph_translation, 0);
+            } else if (e.key === "ArrowLeft") {
+                graph.translate(graph_translation, 0);
+            } else if (e.key === "ArrowUp") {
+                graph.translate(0, graph_translation);
+            } else if (e.key === "ArrowDown") {
+                graph.translate(0, -graph_translation);
+            }
+   })
 
     return () => {
       graph.destroy();
     };
- 
+  
   });
 
   $: {
@@ -218,12 +254,11 @@ graph.on("node:mouseleave", (e) => {
   }
 
   .g6tooltip {
-    background-color: rgb(32, 33, 33, 0.8) ;
+    background-color: rgb(33, 33, 33) ;
     border-radius: 8px;
     align-items: center;
     border-color: #555555;
     border-width: 1px;
-    box-shadow: rgb(35, 34, 34) 2px 2px 2px;
     height: fit-content; 
     align-items: center;
     width :fit-content;  
