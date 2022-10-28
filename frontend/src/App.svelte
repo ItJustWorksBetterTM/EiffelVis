@@ -153,16 +153,16 @@
   };
 
   const toggleMenu = () => {
-    if (show_legend) {
-      toggleLegend();
-    }
+    // if (show_legend) {
+    //   toggleLegend();
+    // }
     show_menu = !show_menu;
   };
 
   const toggleLegend = () => {
-    if (show_menu) {
-      toggleMenu();
-    }
+    // if (show_menu) {
+    //   toggleMenu();
+    // }
     show_legend = !show_legend;
   };
 
@@ -197,51 +197,11 @@
 
 <div class="m-0 h-screen bg-base-300">
   <div
-    class="flex h-fit right-0 bottom-0 fixed align-bottom justify-center items-end"
+    class="flex left-0 bottom-0 fixed align-bottom justify-center items-end"
     style="z-index:1"
   >
-    <div class="block m-6">
-      <ul class="menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
-        <li>
-          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
-              />
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              class="inline-block w-6 h-6 stroke-current"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </a>
-        </li>
+    <div class="grid block h-screen m-6 place-items-end">
+      <ul class=" menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
         <li>
           <a
             class=""
@@ -274,62 +234,118 @@
             </svg>
           </a>
         </li>
+        <li>
+          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 9.5H3M21 4.5H3M21 14.5H3M21 19.5H3"
+              />
+            </svg>
+          </a>
+        </li>
       </ul>
     </div>
-    <div
-      class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
-      style="z-index:1"
-      class:hidden={!show_menu}
-    >
-      <GraphOptions
-        bind:graph_options
-        on:reset={reset_graph_options}
-        on:apply={consume_query}
-      />
-    </div>
-    <div
-      style="z-index:1"
-      class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
-      class:show={show_legend}
-    >
-      <ColorLegend {colors} />
-    </div>
-  </div>
-
-  <div
-    style="z-index:1"
-    class="p-3 shadow-lg bg-base-100 rounded-box h-fit left-0 bottom-0 fixed w-fit m-6"
-  >
-    <div class="container h-full w-full p-1 overflow-hidden scroll-auto">
-      <div class:hidden={!selected_node} class="rounded-box bg-accent p-3 mb-2">
-        <EventDetail {selected_node} on:useroot={use_selected_as_root} />
-      </div>
-      <h1 class="text-lg py-2">Filter Options:</h1>
-      <QueryForm bind:query={current_query} />
-      <div class="btn-group w-full flex flex-row mt-2">
-        <button class="btn btn-sm btn-primary basis-1/3" on:click={add_filter}>
-          + new filter</button
+    <div class="w-80" style="z-index:1">
+      <ul class="menu menu-compact">
+        <li>
+          <div
+            class="overflow-x-auto overflow-y-auto bg-base-100 w-0 h-fit shadow-lg rounded-box mb-6"
+            class:show={show_legend}
+          >
+            <ColorLegend {colors} />
+          </div>
+        </li>
+        <div
+          class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
+          class:hidden={!show_menu}
         >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          disabled={qhistory.length <= 1 || awaiting_query_request}
-          on:click={() => {
-            qhistory.pop();
-            current_query = qhistory.pop();
-            qhistory = [...qhistory];
-            submit_state_query();
-          }}
-          >{qhistory.length - 1 > 0
-            ? "undo " + (qhistory.length - 1)
-            : ":)"}</button
-        >
-        <button
-          class="btn btn-sm btn-primary basis-1/3"
-          class:loading={awaiting_query_request}
-          disabled={awaiting_query_request || !current_query_changed}
-          on:click={submit_state_query}>submit</button
-        >
-      </div>
+          <GraphOptions
+            bind:graph_options
+            on:reset={reset_graph_options}
+            on:apply={consume_query}
+          />
+        </div>
+        <li />
+        <li>
+          <div
+            class="p-3 shadow-lg bg-base-100 rounded-box h-fit fixed w-fit m-6"
+          >
+            <div
+              class="container h-full w-full p-1 overflow-hidden scroll-auto"
+            >
+              <div
+                class:hidden={!selected_node}
+                class="rounded-box bg-accent p-3 mb-2"
+              >
+                <EventDetail
+                  {selected_node}
+                  on:useroot={use_selected_as_root}
+                />
+              </div>
+              <h1 class="text-lg py-2">Filter Options:</h1>
+              <QueryForm bind:query={current_query} />
+              <div class="btn-group w-full flex flex-row mt-2">
+                <button
+                  class="btn btn-sm btn-primary basis-1/3"
+                  on:click={add_filter}
+                >
+                  + new filter</button
+                >
+                <button
+                  class="btn btn-sm btn-primary basis-1/3"
+                  disabled={qhistory.length <= 1 || awaiting_query_request}
+                  on:click={() => {
+                    qhistory.pop();
+                    current_query = qhistory.pop();
+                    qhistory = [...qhistory];
+                    submit_state_query();
+                  }}
+                  >{qhistory.length - 1 > 0
+                    ? "undo " + (qhistory.length - 1)
+                    : ":)"}</button
+                >
+                <button
+                  class="btn btn-sm btn-primary basis-1/3"
+                  class:loading={awaiting_query_request}
+                  disabled={awaiting_query_request || !current_query_changed}
+                  on:click={submit_state_query}>submit</button
+                >
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 
