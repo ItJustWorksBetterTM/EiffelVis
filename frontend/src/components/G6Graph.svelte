@@ -47,6 +47,7 @@
     graph.addItem("node", ev, false, false);
     for (const edge of ev.edges) {
       graph.addItem("edge", { source: ev.id, target: edge.target, label: edge.type }); // the type of link is connected to the label of the edge here. 
+      edgesToBack(ev);      // put all edges attached to the node behond the nodes (needed when using groupByTypes: false);
     }
 
     timeBarData.push({
@@ -54,6 +55,23 @@
       value: "1",
     });
   };
+
+  /**
+   * Helper method that will rearrange the order of items on the z-index (edges behind the nodes) 
+   * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
+   * This allows to only manipulate the nodes newly pushed into the graph.
+   * @param event containing a node and its edges. 
+   */
+   const edgesToBack = (event) => {
+      const node = graph.findById(event.id);
+      if (node instanceof Node){
+        const edges = node.getEdges();
+        edges.forEach(edge => {
+          edge.toBack();
+        })
+      }
+      graph.paint();
+  }
 
   export const updateTimeBar = (timeBarEnabled: boolean) => {
     graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
@@ -158,6 +176,7 @@
         if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
           const edges = node.getEdges();
           edges.forEach(edge => {
+            edge.toFront();          // put edge on top of the nodes (to see lables)
             graph.updateItem(edge, { //update the edges of the node 
               labelCfg: {
                 style: {
@@ -188,6 +207,7 @@
     if(node instanceof Node){     // check if item is a Node to be able to access the getEdges() method.
           const edges = node.getEdges();
           edges.forEach(edge => {
+            edge.toBack();       // put edge back behond the node
             graph.updateItem(edge, {
               labelCfg: {
                 style: {

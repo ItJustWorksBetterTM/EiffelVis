@@ -185,6 +185,7 @@
     height: 400,
     workerEnabled: false,
     fitView: true,
+    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
     defaultEdge: {
       labelCfg: {
         position: 'center', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
