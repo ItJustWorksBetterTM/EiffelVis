@@ -190,9 +190,13 @@
       labelCfg: {
         position: 'center', // styling for the edge should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
         style:{
+          fontSize: 10,
           fill: '#ffffff',
-          opacity: 0, 
-          
+          fillOpacity: 0,
+          shadowColor: "#151517",
+          shadowOffsetY: 10,
+          shoadowOffsetX: 10,
+          shadowBlur: 10
         }
     },
       style: {
