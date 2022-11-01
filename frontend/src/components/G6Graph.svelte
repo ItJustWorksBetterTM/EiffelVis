@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, {Graph, IG6GraphEvent, Node } from "@antv/g6"; 
+  import G6, {Graph, IG6GraphEvent, Node, GraphData, TimeBar } from "@antv/g6"; 
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
@@ -12,10 +12,10 @@
   export let options = {};
   export let data = {};
 
-  let container: HTMLElement;
-
-  let graph: Graph | null;
-  let timeBarData: TimeBarData[] = [];
+    let container: HTMLElement;
+    let previousTimebar = new TimeBar({}); //init previousTimebar as a placeholder
+    let graph: Graph | null;
+    let timeBarData: TimeBarData[] = [];
 
   export const reset = () => {
     graph?.changeData({});
@@ -56,7 +56,8 @@
     });
   };
 
-  /**
+
+    /**
    * Helper method that will rearrange the order of items on the z-index (edges behind the nodes) 
    * To avoid iterating through the whole graph and update, we use this helper method inside the push method.
    * This allows to only manipulate the nodes newly pushed into the graph.
@@ -73,58 +74,61 @@
       graph.paint();
   }
 
-  export const updateTimeBar = (timeBarEnabled: boolean) => {
-    graph.removePlugin(graph.get("plugins")[1]); // changed index to 1 since the timebar is added after the tooltip
-    if (!timeBarEnabled) {
-      //TO-DO Reset the graph if wanted later
-    } else {
-      graph!.addPlugin(
-        new G6.TimeBar({
-          className: "g6TimeBar",
-          x: 0,
-          y: 0,
-          width: 500,
-          height: 110,
-          padding: 10,
-          type: "trend",
-          changeData: false,
-          trend: {
-            data: timeBarData,
-            smooth: true,
-          },
-          tick: {
-            tickLabelFormatter: (timeBarData: any) => {
-              return "";
-            },
+    export const updateTimeBar = (timeBarEnabled: boolean) => {
+        // remove registered timebar
+        graph.removePlugin(previousTimebar);
+        if (!timeBarEnabled) {
+            //TO-DO Reset the graph if wanted later
+        } else {
+            // init timebar
+            let newTimebar = new G6.TimeBar({
+                className: "g6TimeBar",
+                x: 0,
+                y: 0,
+                width: 500,
+                height: 110,
+                padding: 10,
+                type: "trend",
+                changeData: false,
+                trend: {
+                    data: timeBarData,
+                    smooth: true,
+                },
+                tick: {
+                    tickLabelFormatter: (timeBarData: any) => {
+                        return "";
+                    },
 
-            tickLineStyle: {
-              fill: "#f28c18",
-            },
-          },
-          slider: {
-            backgroundStyle: {
-              fill: "#131616",
-            },
-            foregroundStyle: {
-              fill: "#ffffff",
-            },
-            handlerStyle: {
-              style: {
-                fill: "#f28c18",
-                stroke: "#f28c18",
-              },
-            },
-          },
-          controllerCfg: {
-            fill: "#131616",
-            stroke: "#131616",
-            timePointControllerText: " Point",
-            timeRangeControllerText: " Point",
-          },
-        })
-      );
-    }
-  };
+                    tickLineStyle: {
+                        fill: "#f28c18",
+                    },
+                },
+                slider: {
+                    backgroundStyle: {
+                        fill: "#131616",
+                    },
+                    foregroundStyle: {
+                        fill: "#ffffff",
+                    },
+                    handlerStyle: {
+                        style: {
+                            fill: "#f28c18",
+                            stroke: "#f28c18",
+                        },
+                    },
+                },
+                controllerCfg: {
+                    fill: "#131616",
+                    stroke: "#131616",
+                    timePointControllerText: " Point",
+                    timeRangeControllerText: " Point",
+                },
+            });
+            // updata previousTimebar with newTimebar
+            previousTimebar = newTimebar;
+            graph!.addPlugin(newTimebar);
+        }
+    };
 
   // Declare the tooltip. Styling happens below in the .g6tooltip section
   // doc: https://g6.antv.vision/en/examples/tool/tooltip#tooltipPlugin 
