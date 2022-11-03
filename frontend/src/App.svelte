@@ -170,10 +170,6 @@
     show_legend = !show_legend;
   };
 
-  const toggleFilter = () => {
-    show_filter = !show_filter;
-  };
-
   const options = {
     width: 400,
     height: 400,
