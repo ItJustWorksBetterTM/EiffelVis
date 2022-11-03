@@ -1,13 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
-
-    import G6, { Graph, GraphData, IG6GraphEvent,TimeBar } from "@antv/g6";
+    import G6, { Graph, IG6GraphEvent, TimeBar } from "@antv/g6";
     import type { TimeBarData } from "../uitypes";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
-    const graph_translation = 50;
+    const graph_translation: number = 50;
 
     export let options = {};
     export let data = {};
@@ -125,16 +124,13 @@
 
         // Enable keyboard manipulation
         graph.on("keydown", (e: IG6GraphEvent) => {
-            if (e.key === "ArrowRight") {
-                graph.translate(-graph_translation, 0);
-            } else if (e.key === "ArrowLeft") {
-                graph.translate(graph_translation, 0);
-            } else if (e.key === "ArrowUp") {
-                graph.translate(0, graph_translation);
-            } else if (e.key === "ArrowDown") {
-                graph.translate(0, -graph_translation);
-            }
+            let weight: Function = (k1: string, k2: string) => e.key == k1 ? -1 : e.key == k2 ? 1 : 0
+                graph.translate(
+                    weight("ArrowRight", "ArrowLeft") * graph_translation,
+                    weight("ArrowDown", "ArrowUp") * graph_translation,
+                )
         })
+        
 
         graph.changeData(data);
         resizeGraph();
