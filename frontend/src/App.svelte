@@ -30,6 +30,7 @@
   let show_menu = false;
   let show_legend = true;
   let show_timebar = false;
+  let show_filter = false;
 
   let customTheme = config.Theme.ColorBlind;
   let themeMap = new Map(Object.entries(customTheme));
@@ -169,6 +170,10 @@
     show_legend = !show_legend;
   };
 
+  const toggleFilter = () => {
+    show_filter = !show_filter;
+  };
+
   const options = {
     width: 400,
     height: 400,
@@ -289,17 +294,18 @@
             <ColorLegend {styles} />
           </div>
         </li>
-        <div
-          class="p-3 shadow-lg bg-base-100 rounded-box h-fit w-fit mb-6"
-          class:hidden={!show_menu}
-        >
-          <GraphOptions
-            bind:graph_options
-            on:reset={reset_graph_options}
-            on:apply={consume_query}
-          />
-        </div>
-        <li />
+        <li>
+          <div
+            class="overflow-x-auto overflow-y-auto bg-base-100 h-fit shadow-lg rounded-box mb-2 pb-2"
+            class:hidden={!show_menu}
+          >
+            <GraphOptions
+              bind:graph_options
+              on:reset={reset_graph_options}
+              on:apply={consume_query}
+            />
+          </div>
+        </li>
         <li>
           <div
             class="p-3 shadow-lg bg-base-100 rounded-box h-fit fixed w-fit m-6"
