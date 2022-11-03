@@ -170,6 +170,10 @@
     show_legend = !show_legend;
   };
 
+  const toggleFilter = () => {
+    show_filter = !show_filter;
+  };
+
   const options = {
     width: 400,
     height: 400,
@@ -206,6 +210,35 @@
   >
     <div class="grid block h-screen m-6 place-items-end">
       <ul class=" menu w-16 py-3 shadow-lg bg-base-100 rounded-box">
+        <li>
+          <a
+            class=" focus:bg-primary"
+            class:btn-active={show_filter}
+            on:click={toggleFilter}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="inline-block w-6 h-6 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21.5 12H12V2.5"
+              />
+              <circle
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                cx="12"
+                cy="12"
+                r="10"
+              />
+            </svg>
+          </a>
+        </li>
         <li>
           <a
             class=""
@@ -304,21 +337,22 @@
         </li>
         <li>
           <div
-            class="p-3 shadow-lg bg-base-100 rounded-box h-fit fixed w-fit m-6"
+            class="overflow-x-auto overflow-y-auto bg-base-100 h-fit shadow-lg rounded-box mb-2 pb-2"
+            class:hidden={!show_filter}
           >
-            <div
-              class="container h-full w-full p-1 overflow-hidden scroll-auto"
-            >
+            <div class="container h-full w-full scroll-auto">
               <div
-                class:hidden={!selected_node}
-                class="rounded-box bg-accent p-3 mb-2"
+                class="bg-primary text-primary-content grid h-10   place-items-center"
               >
+                Filter
+              </div>
+              <div class="m-2" />
+              <div class="rounded-box bg-accent p-3 mb-2">
                 <EventDetail
                   {selected_node}
                   on:useroot={use_selected_as_root}
                 />
               </div>
-              <h1 class="text-lg py-2">Filter Options:</h1>
               <QueryForm bind:query={current_query} />
               <div class="btn-group w-full flex flex-row mt-2">
                 <button
