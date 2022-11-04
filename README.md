@@ -94,9 +94,16 @@ Copyright © 2022, EiffelVis. EiffelVis is a product by ItJustWorks™.
 
 TODO
 
-# Set-up Instruction
+# Event Sender and testing instructions (for default rabbitmq configuration)
 
-1. Pull all of the code from test-running branch.
-2. Install a rabbitMQ broker(server) locally at localhost:5672(you can follow the guide from the RabbitMQ docker installation instruction). Run the RabbitMQ server.
-3. Start Eiffelvis frontend and backend with the code on test-running branch.
-4. Go to the folder /backend/tools/event_sender, run the cargo run command. Be default, it will generate 3 mock events on every run. Now you should have the nodes/graph updated in your frontend.
+1. start your rabbitmq server 
+  `rabbitmq server` or `brew services start rabbitmq` if you are using homebrew on mac. 
+2. If not activated, activate the management pluggin by running `rabbitmq-plugins enable rabbitmq_management`
+3. go to `http://localhost:15672`to enter the rabbitMQ management page. (default credentials are username & password: `guest`)
+4. go to the queue panel and create a new queue. The queue has to use the same name as the one you are going to use with the backend (default `hello`)
+5 go to the exchange panel and select `amq.fanout`in the list.
+6. Click on `Bindings`and add the binding of this exchange to the queue using the same name as step 3. 
+7. go into `EiffelVis/backend/tools/event_sender`and run the command `cargo run -- -r <any_routing_key>` (you can also add other options, run to `cargo run -- --help`for more info)
+8. go into `EiffelVis/backend`and run `cargo run`
+9. go into `EiffelVis/frontend`and run `npm run dev`
+10. open your browser to `localhost:8080`and you should have nodes coming and being displayed on the graph. 

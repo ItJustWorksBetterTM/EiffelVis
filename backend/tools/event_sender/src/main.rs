@@ -10,7 +10,7 @@ use eiffelvis_gen::{
     generator::EventGenerator,
 };
 
-use lapin::{options::*, types::FieldTable, BasicProperties, Connection, ConnectionProperties};
+use lapin::{options::*, BasicProperties, Connection, ConnectionProperties};
 
 use clap::Parser;
 use rand::{thread_rng, Rng};
@@ -40,12 +40,12 @@ struct Cli {
     url: String,
 
     /// Ampq exchange to send events to
-    #[clap(default_value = "", short, long)]
+    #[clap(default_value = "amq.fanout", short, long)]
     exchange: String,
 
     /// Routing key used for ampq connections
 
-    #[clap(default_value = "hello", short, long)]
+    #[clap(short, long)]
     routing_key: String,
 
     /// Random seed used to create event data
@@ -91,14 +91,6 @@ async fn app() -> anyhow::Result<()> {
     .await?;
 
     let channel_a = conn.create_channel().await?;
-
-    channel_a
-        .queue_declare(
-            "hello",
-            QueueDeclareOptions::default(),
-            FieldTable::default(),
-        )
-        .await?;
 
     // println!(?queue, "Declared queue");
     println!("Connected to broker.");
