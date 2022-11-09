@@ -215,6 +215,7 @@
             class=" focus:bg-primary"
             class:btn-active={show_filter}
             on:click={toggleFilter}
+            alt="Filter icon"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -233,6 +234,7 @@
           <a
             class=""
             class:btn-active={show_timebar}
+            alt="Timebar icon"
             on:click={() => (
               (show_timebar = !show_timebar),
               graph_elem.updateTimeBar(show_timebar)
@@ -250,7 +252,12 @@
           </a>
         </li>
         <li>
-          <a class="" class:btn-active={show_legend} on:click={toggleLegend}>
+          <a
+            class=""
+            class:btn-active={show_legend}
+            on:click={toggleLegend}
+            alt="Legend icon"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 576 512"
@@ -263,7 +270,12 @@
           </a>
         </li>
         <li>
-          <a class="" class:btn-active={show_menu} on:click={toggleMenu}>
+          <a
+            class=""
+            class:btn-active={show_menu}
+            on:click={toggleMenu}
+            alt="Menu icon"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"
