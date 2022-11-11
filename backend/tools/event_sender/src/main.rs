@@ -101,12 +101,14 @@ async fn app() -> anyhow::Result<()> {
         Box::new(gen.iter())
     };
 
-    let target = cli.count * cli.burst;
+    let target = cli.count;
     let sleep_duration = Duration::from_millis(cli.latency as u64);
 
     println!(
         "Sending out ~{} events, {} events every {}ms interval",
-        target, cli.burst, cli.latency
+        target * cli.burst,
+        cli.burst,
+        cli.latency
     );
 
     let mut sent = 0;
