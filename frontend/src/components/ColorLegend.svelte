@@ -2,16 +2,16 @@
     export let colors;
 </script>
 
-<table class="table w-full">
+<table class="table w-full p-3">
     <thead>
         <tr>
             <th>Event Type</th>
             <th>Color</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody >
         {#each colors as [event, color]}
-            <tr class="">
+            <tr>
                 <td>{event}</td>
                 <td
                     >&nbsp
