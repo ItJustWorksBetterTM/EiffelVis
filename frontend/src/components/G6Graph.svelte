@@ -16,6 +16,8 @@
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
 
+  let keyMap: Object = {};
+
   export const reset = () => {
     graph?.changeData({});
     timeBarData = [];
@@ -230,14 +232,25 @@
       
     });
 
+
     // Enable keyboard manipulation
     graph.on("keydown", (e: IG6GraphEvent) => {
+      keyMap[e.key] = e.type == 'keydown';
+      console.log(keyMap);
+
+
+
+
       let weight: Function = (k1: string, k2: string) =>
         e.key == k1 ? -1 : e.key == k2 ? 1 : 0;
       graph.translate(
         weight("ArrowRight", "ArrowLeft") * graph_translation,
         weight("ArrowDown", "ArrowUp") * graph_translation
       );
+    });
+
+    graph.on("keyup", (e: IG6GraphEvent) => {
+      keyMap[e.key] = e.type == 'keydown';
     });
 
     graph.changeData(data);
