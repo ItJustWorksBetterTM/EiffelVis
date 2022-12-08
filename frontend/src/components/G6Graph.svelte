@@ -1,18 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import G6, { Graph, IEdge, IG6GraphEvent, Node } from "@antv/g6";
+  import G6, { Graph, IG6GraphEvent, Item, Node } from "@antv/g6";
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-
   const graph_translation: number = 50;
 
   export let options = {};
   export let data = {};
 
   let container: HTMLElement;
-
   let graph: Graph | null;
   let timeBarData: TimeBarData[] = [];
 
@@ -26,7 +24,7 @@
   };
 
     // This is a hack to get the graph to render the entire window width
-    export const resizeGraph = () => {
+  export const resizeGraph = () => {
         if (graph && container) {
             const width = Number(
                 window.innerWidth
@@ -36,7 +34,7 @@
             );
             graph.changeSize(width, height);
         }
-    };
+  };
 
   export const focusNode = (id: any) => {
     graph.focusItem(id);
@@ -68,7 +66,7 @@
    * @param event containing a node and its edges.
    */
   const edgesToBack = (event) => {
-    const node = graph.findById(event.id);
+    const node: Item = graph.findById(event.id);
     if (node instanceof Node) {
       const edges = node.getEdges();
 
@@ -275,10 +273,10 @@
     height: 100%;
   }
   .g6TimeBar {
-    background: #131616;
+    background: rgb(33, 33, 32);
     border-radius: 20px;
     position: absolute !important;
-    left: 35%;
+    left: 45%; 
     bottom: 80px;
     z-index: 0;
   }
