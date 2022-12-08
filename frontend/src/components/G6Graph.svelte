@@ -231,12 +231,14 @@
     });
 
 
-    // Enable keyboard manipulation
+    // Hotkey functionality
     graph.on("keydown", (e: IG6GraphEvent) => {
+
       keyMap[e.key] = e.type == 'keydown';
-      console.log(keyMap)
+      let modifier: number = keyMap["Shift"] ? 4 : 1;
+
       let weight: Function = (k1: string, k2: string) =>
-        keyMap[k1] ? -1 : keyMap[k2] ? 1 : 0;
+        keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
       graph.translate(
         weight("ArrowRight", "ArrowLeft") * graph_translation,
         weight("ArrowDown", "ArrowUp") * graph_translation
