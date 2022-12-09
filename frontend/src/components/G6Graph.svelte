@@ -15,6 +15,7 @@
   let timeBarData: TimeBarData[] = [];
 
   let keyMap: Object = {};
+  const modifierStrength: number = 4;
 
   export const reset = () => {
     graph?.changeData({});
@@ -235,7 +236,7 @@
     graph.on("keydown", (e: IG6GraphEvent) => {
 
       keyMap[e.key] = e.type == 'keydown';
-      let modifier: number = keyMap["Shift"] ? 4 : 1;
+      let modifier: number = keyMap["Shift"] ? modifierStrength : 1;
 
       let weight: Function = (k1: string, k2: string) =>
         keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
