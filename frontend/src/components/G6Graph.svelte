@@ -4,6 +4,8 @@
   import type { TimeBarData } from "../uitypes";
   import { createEventDispatcher } from "svelte";
 
+  
+
   const dispatch = createEventDispatcher();
   const graph_translation: number = 50;
 
@@ -238,6 +240,29 @@
       keyMap[e.key] = e.type == 'keydown';
       let modifier: number = keyMap["Shift"] ? modifierStrength : 1;
 
+      console.log(keyMap);
+
+      // Filter panel (waiting for implementation of disable filter panel)
+      if (keyMap["f"] || keyMap["F"]) {
+        graph.fitView();
+      }
+
+      // Legend panel
+      if (keyMap["l"] || keyMap["L"]) {
+        console.log("legend");
+      }
+
+      // Options panel
+      if (keyMap["o"] || keyMap["O"]) {
+        console.log("options");
+      }
+
+      // Non-interactive mode
+      if (keyMap["n"] || keyMap["N"]) {
+        console.log("non-interactive");
+      }
+
+      // Translations
       let weight: Function = (k1: string, k2: string) =>
         keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
       graph.translate(
