@@ -242,8 +242,6 @@
       keyMap[e.key] = e.type == 'keydown';
       let modifier: number = keyMap["Shift"] ? modifierStrength : 1;
 
-      console.log(keyMap);
-
       // Filter panel (waiting for implementation of toggle filter panel)
       if (keyMap["f"] || keyMap["F"]) {
         graph.fitView();
