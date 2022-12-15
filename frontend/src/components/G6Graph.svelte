@@ -11,6 +11,8 @@
 
   export let options = {};
   export let data = {};
+  export let toggle_menu: () => void;
+  export let toggle_legend: () => void;
 
   let container: HTMLElement;
   let graph: Graph | null;
@@ -242,22 +244,22 @@
 
       console.log(keyMap);
 
-      // Filter panel (waiting for implementation of disable filter panel)
+      // Filter panel (waiting for implementation of toggle filter panel)
       if (keyMap["f"] || keyMap["F"]) {
         graph.fitView();
       }
 
       // Legend panel
-      if (keyMap["l"] || keyMap["L"]) {
-        console.log("legend");
+      if (keyMap["l"] || keyMap["L"]) {        
+        toggle_legend();
       }
 
       // Options panel
       if (keyMap["o"] || keyMap["O"]) {
-        console.log("options");
+        toggle_menu();
       }
 
-      // Non-interactive mode
+      // Non-interactive mode (waiting for implementation)
       if (keyMap["n"] || keyMap["N"]) {
         console.log("non-interactive");
       }

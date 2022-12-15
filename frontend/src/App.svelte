@@ -160,6 +160,7 @@
   };
 
   const toggleLegend = () => {
+    console.log("toggling legend")
     if (show_menu) {
        toggleMenu();
       }
@@ -243,7 +244,9 @@
       />
       <!-- Graph with listeners -->
     <G6Graph
-        on:nodeselected={on_node_selected}
+        toggle_menu = {toggleMenu}
+        toggle_legend = {toggleLegend}
+        on:nodeselected= {on_node_selected}
         bind:this={graph_elem}
         {options}
         data={{}}
