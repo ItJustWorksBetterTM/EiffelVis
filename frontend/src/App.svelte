@@ -37,6 +37,8 @@
 
   let qhistory: FixedQuery[] = [];
 
+  let appKeyMap: Object = {};
+
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
     event_filters: [empty_fixed_event_filters()],
@@ -160,7 +162,6 @@
   };
 
   const toggleLegend = () => {
-    console.log("toggling legend")
     if (show_menu) {
        toggleMenu();
       }
@@ -211,8 +212,31 @@
       ],
     }
   };
-</script>
 
+  const handleKeyDown = (e) => {
+    appKeyMap[e.key] = e.type == 'keydown';
+    // Legend panel
+    if (appKeyMap["l"] || appKeyMap["L"]) {        
+        toggleLegend();
+      }
+
+      // Options panel
+      if (appKeyMap["o"] || appKeyMap["O"]) {
+        toggleMenu();
+      }
+
+      // Non-interactive mode (waiting for implementation)
+      if (appKeyMap["n"] || appKeyMap["N"]) {
+        console.log("non-interactive");
+      }
+
+  }
+  const handleKeyUp = (e) => {  
+    appKeyMap[e.key] = e.type == 'keydown';
+  }
+
+</script>
+<svelte:window on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
 <div class="fixed flex m-0 h-screen w-screen bg-base-100"> 
   <!-- SideBar component: the variables are updated inside App.svelte -->
   <SideBar 
@@ -244,8 +268,6 @@
       />
       <!-- Graph with listeners -->
     <G6Graph
-        toggle_menu = {toggleMenu}
-        toggle_legend = {toggleLegend}
         on:nodeselected= {on_node_selected}
         bind:this={graph_elem}
         {options}

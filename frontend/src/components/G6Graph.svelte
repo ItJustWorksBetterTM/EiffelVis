@@ -11,8 +11,6 @@
 
   export let options = {};
   export let data = {};
-  export let toggle_menu: () => void;
-  export let toggle_legend: () => void;
 
   let container: HTMLElement;
   let graph: Graph | null;
@@ -247,21 +245,7 @@
         graph.fitView();
       }
 
-      // Legend panel
-      if (keyMap["l"] || keyMap["L"]) {        
-        toggle_legend();
-      }
-
-      // Options panel
-      if (keyMap["o"] || keyMap["O"]) {
-        toggle_menu();
-      }
-
-      // Non-interactive mode (waiting for implementation)
-      if (keyMap["n"] || keyMap["N"]) {
-        console.log("non-interactive");
-      }
-
+      
       // Translations
       let weight: Function = (k1: string, k2: string) =>
         keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
