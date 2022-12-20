@@ -15,6 +15,7 @@
     FixedQuery,
     fixed_query_to_norm,
   } from "./uitypes";
+  import type { SvelteComponent } from "svelte";
 
   export let connection: EiffelVisConnection;
 
@@ -286,8 +287,9 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     appKeyMap[e.key] = e.type == 'keydown';
+    
     // Legend panel
     if (appKeyMap["l"] || appKeyMap["L"]) {        
         toggleLegend();
@@ -300,11 +302,11 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 
       // Non-interactive mode (waiting for implementation)
       if (appKeyMap["n"] || appKeyMap["N"]) {
-        console.log("non-interactive");
+        toggleInteractiveMode();
       }
 
   }
-  const handleKeyUp = (e) => {  
+  const handleKeyUp = (e: KeyboardEvent) => {  
     appKeyMap[e.key] = e.type == 'keydown';
   }
 

@@ -250,6 +250,7 @@
       graph.on("keydown", (e: IG6GraphEvent) => {
   
       keyMap[e.key] = e.type == 'keydown';
+      
       let modifier: number = keyMap["Shift"] ? modifierStrength : 1;
 
       // Filter panel (waiting for implementation of toggle filter panel)
