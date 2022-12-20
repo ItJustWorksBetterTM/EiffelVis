@@ -287,7 +287,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent): void => {
     appKeyMap[e.key] = e.type == 'keydown';
     
     // Legend panel
@@ -300,13 +300,30 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         toggleMenu();
       }
 
-      // Non-interactive mode (waiting for implementation)
+      // Non-interactive mode
       if (appKeyMap["n"] || appKeyMap["N"]) {
         toggleInteractiveMode();
       }
 
+      // Timebar
+      if (appKeyMap["t"] || appKeyMap["T"]) {
+        updateTimebar();
+      }
+
+            // Filter panel (waiting for implementation of toggle filter panel)
+      if (appKeyMap["f"] || appKeyMap["F"]) {
+        toggleFilterPanel();
+      }
+
+      // WIP: Shortcut view
+      if (appKeyMap["i"] || appKeyMap["I"]) {
+        console.log("WIP: Shortcut view");
+      }
+
+
   }
-  const handleKeyUp = (e: KeyboardEvent) => {  
+
+  const handleKeyUp = (e: KeyboardEvent): void  => {  
     appKeyMap[e.key] = e.type == 'keydown';
   }
 
