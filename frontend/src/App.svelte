@@ -290,6 +290,10 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   const handleKeyDown = (e: KeyboardEvent): void => {
     appKeyMap[e.key] = e.type == 'keydown';
     
+    if((appKeyMap["ArrowRight"] || appKeyMap["ArrowLeft"] || appKeyMap["ArrowUp"] || appKeyMap["ArrowDown"]) && nonInteractiveState){
+        nonInteractiveState = false;
+    }
+
     // Legend panel
     if (appKeyMap["l"] || appKeyMap["L"]) {        
         toggleLegend();

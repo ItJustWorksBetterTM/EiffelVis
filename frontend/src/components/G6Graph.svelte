@@ -258,9 +258,10 @@
           keyMap[k1] ? -modifier : keyMap[k2] ? modifier : 0;
         graph.translate(
           weight("ArrowRight", "ArrowLeft") * graph_translation,
-                    weight("ArrowDown", "ArrowUp") * graph_translation,
-                )
-        })         
+          weight("ArrowDown", "ArrowUp") * graph_translation,
+          )
+        }
+        )         
         
         // deactivate on graph interactions such as drag ,mouseenter and node click   
         graph.on("canvas:drag", (e:IG6GraphEvent) => { 
