@@ -217,7 +217,7 @@
     consume_query();
   };
 
-  const toggleMenu = () => {
+  const toggleSettings = () => {
     show_settings = !show_settings;
   };
 
@@ -302,7 +302,7 @@
     if (appKeyMap["h"] || appKeyMap["H"]) {
       if (show_legend) toggleLegend();
 
-      if (show_settings) toggleMenu();
+      if (show_settings) toggleSettings();
 
       if (show_filter_panel) toggleFilterPanel();
 
@@ -315,8 +315,8 @@
     }
 
     // Options panel
-    if (appKeyMap["o"] || appKeyMap["O"]) {
-      toggleMenu();
+    if (appKeyMap["s"] || appKeyMap["S"]) {
+      toggleSettings();
     }
 
     // Non-interactive mode
@@ -355,7 +355,7 @@
       {show_settings}
       interactiveMode={nonInteractiveState}
       {show_filter_panel}
-      toggleSettingsPlaceholder={toggleMenu}
+      toggleSettingsPlaceholder={toggleSettings}
       toggleLegendPlaceholder={toggleLegend}
       toggleFilterPanelPlaceholder={toggleFilterPanel}
       updateTimeBarPlaceholder={updateTimebar}
