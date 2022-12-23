@@ -298,6 +298,17 @@
       nonInteractiveState = false;
     }
 
+    // Hide all panels
+    if (appKeyMap["h"] || appKeyMap["H"]) {
+      if (show_legend) toggleLegend();
+
+      if (show_settings) toggleMenu();
+
+      if (show_filter_panel) toggleFilterPanel();
+
+      if (show_timebar) updateTimebar();
+    }
+
     // Legend panel
     if (appKeyMap["l"] || appKeyMap["L"]) {
       toggleLegend();
