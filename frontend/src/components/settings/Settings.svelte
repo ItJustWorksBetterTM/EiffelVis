@@ -70,7 +70,10 @@
         on:apply={consume_query}
       />
       </div> 
-      <div>
+      <div
+      class="bg-base-200 h-full"
+      class:hidden={!setting_list[1].selected}
+      >
         <ShortcutPanel />
       </div> 
     </div>
