@@ -1,13 +1,11 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-  import G6 from "@antv/g6";
-  import { QueryStream, EiffelVisConnection } from "./eiffelvis";
-  import { GraphSettings, StatefulLayout } from "./layout";
+  import QueryStream from "./eiffelvis";
+  import GraphSettings  from "./layout";
   import G6Graph from "./components/G6Graph.svelte";
   import SideBar from "./components/SideBar.svelte";
   import Panel from "./components/Panel.svelte";
   import { FullEvent, query_eq } from "./apidefinition";
-  import { deep_copy } from "./utils";
   import config from "./config.json";
   import {
     empty_fixed_event_filters,
@@ -15,8 +13,13 @@
     fixed_query_to_norm,
   } from "./uitypes";
   import Settings from "./components/settings/Settings.svelte";
+    import { Pane, Splitpanes } from "svelte-splitpanes";
+    import SuperGraph from "./components/SuperGraph.svelte";
+    import { tick } from "svelte";
 
-  export let connection: EiffelVisConnection;
+  let current_graph: SuperGraph = null;
+  let graph_one: SuperGraph = null;
+  let graph_two: SuperGraph = null;
 
   let graph_elem: G6Graph = null;
   let active_stream: QueryStream = null;
@@ -36,9 +39,9 @@
   let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
 
-  let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
+  //let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
 
-  let qhistory: FixedQuery[] = [];
+  let current_qhistory: FixedQuery[] = [];
 
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
@@ -46,12 +49,13 @@
     collection: { type: "Forward" },
   };
 
-  $: current_query_changed =
-    qhistory.length > 0 &&
+  // This needs to be changed to update the qhistory of the current graph
+   $: current_query_changed =
+    current_qhistory.length > 0 &&
     !query_eq(
       fixed_query_to_norm(current_query),
-      fixed_query_to_norm(qhistory[qhistory.length - 1])
-    );
+      fixed_query_to_norm(current_qhistory[current_qhistory.length - 1])
+    ); 
 
   let graph_options: GraphSettings = {
     offset: 0,
@@ -62,14 +66,14 @@
     hue: 360,
   };
 
-  $: {
+/*   $: {
     if (graph_elem) {
       // TODO: split up?
       graph_elem.resizeGraph();
       selected_node = null;
       submit_state_query();
     }
-  }
+  } */
 
 
                                                                // non-interactive mode variables
@@ -81,7 +85,7 @@
   let displayDate: string = null;
   
 
-
+// This should be moved to be displayed for each SuperGraph instance
 const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
   let time: Date = new Date();
   if ( time.getDate() == dayLastEventRecieved){
@@ -115,7 +119,9 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
 }
 
   const consume_query = async () => {
-    const layout = new StatefulLayout();
+    await tick()
+    current_graph.consume_query();
+    /* const layout = new StatefulLayout();
     awaiting_query_request = true;
     const iter = await active_stream.iter();
     awaiting_query_request = false;
@@ -150,69 +156,21 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
     recievedNewNode = false; 
     console.log("stoped recieving nodes")
     resetTimer();// method to reset timer
-    
+    */
   };
 
   const submit_state_query = () => submit_query(current_query);
 
-  const submit_query = (fquery: FixedQuery) => {
-    const new_query = fixed_query_to_norm(fquery);
-    active_stream = (() => {
-      const cached = query_cache.find((v) =>
-        query_eq(new_query, fixed_query_to_norm(v.query))
-      );
-      if (cached) {
-        return cached.stream;
-      } else {
-        const ret = new QueryStream(connection, deep_copy(new_query));
-        query_cache = [
-          ...query_cache,
-          { stream: ret, query: deep_copy(fquery) },
-        ];
-        return ret;
-      }
-    })();
-
-    consume_query();
-    qhistory = [...qhistory, deep_copy(fquery)];
-    show_timebar = false;
-    graph_elem.updateTimeBar(show_timebar);
+  const submit_query = async (fquery: FixedQuery) => {
+    await tick();
+    current_graph.submit_suery(fquery); 
   };
 
   const add_filter = () => {};
 
-  // TODO: add loading for this
-  const on_node_selected = async (e: any) => {
-    if (e.detail?.target) {
-      selected_node = await connection.fetch_node(
-        e.detail.target._cfg.model.id
-      );
-    } else {
-      selected_node = null;
-    }
-  };
-
-  const use_selected_as_root = () => {
-    current_query.collection = { type: "AsRoots" };
-    current_query.range_filter = { begin: null, end: null };
-
-    const filters = empty_fixed_event_filters();
-    filters.ids.pred.ids = [selected_node.meta.id];
-    current_query.event_filters = [filters];
-
-    submit_state_query();
-  };
-
-  const reset_graph_options = () => {
-    graph_options = {
-      offset: 0,
-      time_diff: 1000,
-      y_scale: 0.99,
-      x_sep: 60,
-      y_sep: 60,
-      hue: 360,
-    };
-    consume_query();
+  const use_selected_as_root = async () => {
+    await tick();
+    current_graph.use_selected_as_root();
   };
 
   const toggleMenu = () => {
@@ -238,50 +196,40 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
             (nonInteractiveState = !nonInteractiveState)
   };
 
-  const options = {
-    width: 400,
-    height: 400,
-    workerEnabled: false,
-    fitView: true,
-    fitViewPadding:[0,0,0,600],
-    groupByTypes: false,  // enables to control z-index of items https://antv-g6.gitee.io/en/docs/manual/middle/elements/methods/elementIndex
-    defaultEdge: {
-      labelCfg: {
-        position: 'center', 
-        style:{           // default styling for the edge labels should come here https://g6.antv.vision/en/docs/manual/middle/elements/edges/defaultEdge
-          fontSize: 10,
-          fill: '#ffffff',
-          fillOpacity: 0,
-          shadowColor: "#151517",
-          shadowOffsetY: 10,
-          shoadowOffsetX: 10,
-          shadowBlur: 10
-        }
-    },
-      style: {          // default styling for the edge should come here
-        lineWidth: 1, 
-        opacity: 0.3,
-        fill: '#fff',
-        position: "middle",
-        endArrow: { path: G6.Arrow.triangle(5, 10, 0), d: 0 },
-      },
-    },
-    modes: {
-      default: [
-        "click-select",
-        "drag-canvas",
-        {
-          type: "zoom-canvas",
-          enableOptimize: true,
-        },
-      ],
-    }
-  };
-
  const  handle_close_request = () => {
     console.log('received in app')
     show_settings = !show_settings
  }
+
+
+  // Sets the selected node (Doesn't know what graph it's from)
+  const setSelectedNode = (e: any) => {
+    selected_node = e.detail;
+  };
+
+  // Sets the initial graph element 
+  const setGraphElement = (e: any) => {
+    if(e.detail != graph_elem){
+      graph_elem = e.detail;
+    }
+  };
+  
+  const setCurrentGraph = (graph: any) =>{
+    console.log("setCurrentGraph");
+    current_graph = graph;
+    setCurrentQhistory();
+  };
+
+  const setCurrentQhistory = async () => {
+    await tick();
+    current_qhistory = current_graph.getQhistory();
+  };
+
+const reset_graph_options = async () => {
+  await tick();
+  return current_graph.reset_graph_options()
+}
+
 </script>
 
 <div class="flex w-screen h-screen relative bg-base-100"> 
@@ -310,13 +258,14 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
         current_query = {current_query}
         current_query_changed= {current_query_changed}
         add_filter = {add_filter}
-        qhistory = {qhistory}
+        qhistory = {current_qhistory}
         awaiting_query_request = {awaiting_query_request}
         submit_state_query_placeholder = {submit_state_query}
         selected_node = {selected_node}
         styles = {styles}
       />
   </div>
+  
   <div class="flex flex-col fixed z-0 items-center">
     <div
         style="white-space: nowrap;"      
@@ -324,19 +273,35 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
               class:show= {show_message}
               >
       <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
-    </div>
-    <G6Graph
-      on:nodeselected={(on_node_selected)}
-      bind:this={graph_elem}
-      bind:nonInteractiveState = {nonInteractiveState}
-      {options}
-      data={{}}
-    />
+    </div>  
+    <div >
+     <!-- Used for testing, will be updated to add dynamically -->
+      <Splitpanes theme="my-theme" style="height: 100%">
+        <Pane>
+          <Splitpanes theme="my-theme" horizontal="{true}" >
+            <Pane > 
+               <SuperGraph
+                  on:selected_node_change={setSelectedNode}
+                  on:set_graph_element={setGraphElement}
+                  on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_one)} }
+                  bind:this={graph_one}
+                  /> 
+            </Pane>
+            <Pane >
+                <SuperGraph
+                  on:selected_node_change={setSelectedNode}
+                  on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
+                  bind:this={graph_two}
+                  />
+            </Pane>
+          </Splitpanes>
+        </Pane>
+      </Splitpanes>
+    </div>   
   </div>
   <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
     <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
-      class:hidden={!show_settings}
-    >
+      class:hidden={!show_settings}>
       <Settings 
       on:close_request={() => {show_settings = !show_settings}}
       consume_query = {consume_query}
@@ -345,7 +310,7 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
       />
     </div>
   </div>
-</div>
+ </div>
 
 <style lang="postcss" global>
 
@@ -368,5 +333,50 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
+
+  .splitpanes.my-theme {
+  .splitpanes__pane {
+      background-color: #fffff;
+  }
+  .{
+    border-color: aliceblue;
+    border-radius: 2em;
+  }
+  .splitpanes__splitter {
+      background-color: rgb(0, 0, 0);
+      position: relative;
+      &:before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          transition: opacity 0.4s;
+          background-color: rgba(0, 0, 0, 0.2);
+          opacity: 0;
+          z-index: 1;
+      }
+      &:hover:before {
+          opacity: 1;
+      }
+      &.splitpanes__splitter__active {
+          z-index: 2; /* Fix an issue of overlap fighting with a near hovered splitter */
+      }
+  }
+}
+.my-theme {
+  &.splitpanes--vertical > .splitpanes__splitter:before {
+      left: -30px;
+      right: -30px;
+      height: 100%;
+      cursor: col-resize;
+  }
+  &.splitpanes--horizontal > .splitpanes__splitter:before {
+      top: -10px;
+      bottom: -10px;
+      width: 100%;
+      cursor: row-resize;
+  }
+}
 
 </style>
