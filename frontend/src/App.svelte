@@ -1,8 +1,8 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script lang="ts">
-  import QueryStream from "./eiffelvis";
-  import GraphSettings  from "./layout";
-  import G6Graph from "./components/G6Graph.svelte";
+  import type {QueryStream} from "./eiffelvis";
+  import type {GraphSettings}  from "./layout";
+  import type G6Graph from "./components/G6Graph.svelte";
   import SideBar from "./components/SideBar.svelte";
   import Panel from "./components/Panel.svelte";
   import { FullEvent, query_eq } from "./apidefinition";
@@ -13,9 +13,9 @@
     fixed_query_to_norm,
   } from "./uitypes";
   import Settings from "./components/settings/Settings.svelte";
-    import { Pane, Splitpanes } from "svelte-splitpanes";
-    import SuperGraph from "./components/SuperGraph.svelte";
-    import { tick } from "svelte";
+  import { Pane, Splitpanes } from "svelte-splitpanes";
+  import SuperGraph from "./components/SuperGraph.svelte";
+  import { tick } from "svelte";
 
   let current_graph: SuperGraph = null;
   let graph_one: SuperGraph = null;
@@ -66,112 +66,22 @@
     hue: 360,
   };
 
-/*   $: {
+$: {
     if (graph_elem) {
       // TODO: split up?
       graph_elem.resizeGraph();
       selected_node = null;
       submit_state_query();
     }
-  } */
-
-
-                                                               // non-interactive mode variables
-  let show_message: boolean = false; 
-  let dayToDisplay: string = null; 
-  let dayLastEventRecieved: number = 0; 
-  let recievedNewNode: boolean = false; 
-  let displayTime: string = null;
-  let displayDate: string = null;
-  
-
-// This should be moved to be displayed for each SuperGraph instance
-const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a message is displayed. 
-  let time: Date = new Date();
-  if ( time.getDate() == dayLastEventRecieved){
-      dayToDisplay = "TODAY";     
-  }
-  else if (time.getDate() - dayLastEventRecieved == 1){   
-      dayToDisplay = "YESTERDAY"; 
-  }
-  else if (time.getDate() - dayLastEventRecieved> 1){
-      dayToDisplay = displayDate;
   }
 
-  if (recievedNewNode==false && dayToDisplay != null  ){
-    show_message = true; 
-    nonInteractiveState = false;
-    console.log("received no new node")
-  }
-  else {
-    show_message = false;
-  } 
-}
 
- let ms = 60000;
- let interval= setInterval( displayInfoMessage, ms); // set timer to run every 1 minute
 
- // timer function to wait 1 minute to check if nodes are still being received, 
- // if no new nodes after 1 minute, message for latest node received is displayed
- const resetTimer = () =>{
-  clearInterval(interval); // interval is reset every minute 
-  interval= setInterval( displayInfoMessage, ms);
-}
-
-  const consume_query = async () => {
-    await tick()
-    current_graph.consume_query();
-    /* const layout = new StatefulLayout();
-    awaiting_query_request = true;
-    const iter = await active_stream.iter();
-    awaiting_query_request = false;
-    graph_elem.reset();
-    let once = true;
-
-    for await (const event of iter) {
-      layout.apply(event, graph_options);
-      graph_elem.push(event);
-
-      graph_elem.nonInteractiveMode(event,nonInteractiveState);
-    
-      //every time a node is pushed to the graph the variables are updated
-      let timeJson: number = event.time;
-      let time: Date = new Date(timeJson);
-      dayLastEventRecieved = time.getDate(); 
-      displayDate= time.toLocaleDateString([], {weekday: "short", day: "numeric", month: "short",year: "numeric"});
-      displayTime= time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
-      recievedNewNode = true;
-      show_message = false; 
-
-       
-      // TODO: Find a better way to do this
-      if (once) {
-        graph_elem.focusNode(event.id);
-        once = false;
-      }
-
-      legend = layout.getNodeStyle();
-    }
-
-    recievedNewNode = false; 
-    console.log("stoped recieving nodes")
-    resetTimer();// method to reset timer
-    */
-  };
-
-  const submit_state_query = () => submit_query(current_query);
-
-  const submit_query = async (fquery: FixedQuery) => {
-    await tick();
-    current_graph.submit_suery(fquery); 
-  };
+  let submit_state_query = () => submit_query(current_query);
+  let submit_query: (fquery: FixedQuery) => Promise<void>;
+  let consume_query: () => Promise<void>;
 
   const add_filter = () => {};
-
-  const use_selected_as_root = async () => {
-    await tick();
-    current_graph.use_selected_as_root();
-  };
 
   const toggleMenu = () => {
     show_settings = !show_settings;
@@ -215,20 +125,13 @@ const displayInfoMessage= () =>{ //After 1 minute of no nodes recieved, a messag
   };
   
   const setCurrentGraph = (graph: any) =>{
-    console.log("setCurrentGraph");
     current_graph = graph;
-    setCurrentQhistory();
+   
   };
 
-  const setCurrentQhistory = async () => {
-    await tick();
-    current_qhistory = current_graph.getQhistory();
-  };
+let reset_graph_options: () => void;
+let use_selected_as_root: () => void;
 
-const reset_graph_options = async () => {
-  await tick();
-  return current_graph.reset_graph_options()
-}
 
 </script>
 
@@ -266,15 +169,7 @@ const reset_graph_options = async () => {
       />
   </div>
   
-  <div class="flex flex-col fixed z-0 items-center">
-    <div
-        style="white-space: nowrap;"      
-              class:hidden={!show_message}
-              class:show= {show_message}
-              >
-      <span class="text-sm text-left w-full h-full">LATEST EVENTS RECEIVED - {dayToDisplay} AT {displayTime}</span> 
-    </div>  
-    <div >
+  <div class="flex flex-col z-0 items-center" >
      <!-- Used for testing, will be updated to add dynamically -->
       <Splitpanes theme="my-theme" style="height: 100%">
         <Pane>
@@ -285,6 +180,12 @@ const reset_graph_options = async () => {
                   on:set_graph_element={setGraphElement}
                   on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_one)} }
                   bind:this={graph_one}
+                  bind:consume_query = {consume_query}
+                  bind:qhistory= {current_qhistory}
+                  bind:reset_graph_options= {reset_graph_options}
+                  bind:use_selected_as_root = {use_selected_as_root}
+                  bind:submit_query = {submit_query}
+                  
                   /> 
             </Pane>
             <Pane >
@@ -292,12 +193,17 @@ const reset_graph_options = async () => {
                   on:selected_node_change={setSelectedNode}
                   on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
                   bind:this={graph_two}
+                  bind:consume_query = {consume_query}
+                  bind:qhistory= {current_qhistory}
+                  bind:reset_graph_options= {reset_graph_options}
+                  bind:use_selected_as_root = {use_selected_as_root}
+                  bind:submit_query = {submit_query}
                   />
             </Pane>
           </Splitpanes>
         </Pane>
       </Splitpanes>
-    </div>   
+    
   </div>
   <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
     <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
