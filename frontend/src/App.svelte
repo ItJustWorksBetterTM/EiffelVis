@@ -16,6 +16,8 @@
   import { Pane, Splitpanes } from "svelte-splitpanes";
   import SuperGraph from "./components/SuperGraph.svelte";
   import { tick } from "svelte";
+  import SvgButton from "./components/SvgButton.svelte";
+  import G6 from "@antv/g6";
 
   let current_graph: SuperGraph = null;
   let graph_one: SuperGraph = null;
@@ -131,7 +133,20 @@ $: {
 
 let reset_graph_options: () => void;
 let use_selected_as_root: () => void;
+let Options: any;
+let splitView = true; 
+let newGraph: SuperGraph; 
+  $:panesNumber = 1;
+  $:newGraph; 
+ 
+    $: addNewGraph = () => {
+        if (panesNumber >= 0) panesNumber++;
+         newGraph = new SuperGraph(Options); 
+      }
 
+    $: removeNewGraph = () => {
+        if (panesNumber >= 0) panesNumber--;
+      }
 
 </script>
 
@@ -167,44 +182,49 @@ let use_selected_as_root: () => void;
         selected_node = {selected_node}
         styles = {styles}
       />
-  </div>
-  
-  <div class="flex flex-col z-0 items-center" >
-     <!-- Used for testing, will be updated to add dynamically -->
-      <Splitpanes theme="my-theme" style="height: 100%">
+    </div>
+    <div>
+      <SvgButton
+        onClickAction= {addNewGraph}
+        btnState= {splitView}
+        data = "M3 3h18v18H3zM12 8v8m-4-4h8"
+      />
+    <button
+      disabled={panesNumber <= 0}
+      on:click= {removeNewGraph}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" 
+        viewBox="0 0 24 24" fill="none" 
+        stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3h18v18H3zM8 12h8"/></svg>
+    </button>
+
+      <Splitpanes theme="my-theme" style="height: {100/panesNumber}%">
         <Pane>
-          <Splitpanes theme="my-theme" horizontal="{true}" >
-            <Pane > 
-               <SuperGraph
-                  on:selected_node_change={setSelectedNode}
-                  on:set_graph_element={setGraphElement}
-                  on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_one)} }
-                  bind:this={graph_one}
-                  bind:consume_query = {consume_query}
-                  bind:qhistory= {current_qhistory}
-                  bind:reset_graph_options= {reset_graph_options}
-                  bind:use_selected_as_root = {use_selected_as_root}
-                  bind:submit_query = {submit_query}
-                  
-                  /> 
-            </Pane>
-            <Pane >
-                <SuperGraph
+          <Splitpanes theme="my-theme" horizontal="{true}">
+            {#each { length: panesNumber } as _, i}
+              <Pane class="pane" minSize={1}>
+                <svelte:component this = {SuperGraph}
                   on:selected_node_change={setSelectedNode}
                   on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
-                  bind:this={graph_two}
+                  on:set_graph_element={setGraphElement}
+                  on:pane_clicked={setGraphElement}
+                  options={Options}
+                  bind:this={newGraph}
                   bind:consume_query = {consume_query}
                   bind:qhistory= {current_qhistory}
                   bind:reset_graph_options= {reset_graph_options}
                   bind:use_selected_as_root = {use_selected_as_root}
                   bind:submit_query = {submit_query}
+                 
                   />
-            </Pane>
+              </Pane>
+            {/each}
           </Splitpanes>
         </Pane>
       </Splitpanes>
-    
   </div>
+  
   <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
     <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
       class:hidden={!show_settings}>
