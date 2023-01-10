@@ -198,33 +198,33 @@ let newGraph: SuperGraph;
         stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 3h18v18H3zM8 12h8"/></svg>
     </button>
-
-      <Splitpanes theme="my-theme" style="height: {100/panesNumber}%">
-        <Pane>
-          <Splitpanes theme="my-theme" horizontal="{true}">
-            {#each { length: panesNumber } as _, i}
-              <Pane class="pane" minSize={1}>
-                <svelte:component this = {SuperGraph}
-                  on:selected_node_change={setSelectedNode}
-                  on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
-                  on:set_graph_element={setGraphElement}
-                  on:pane_clicked={setGraphElement}
-                  options={Options}
-                  bind:this={newGraph}
-                  bind:consume_query = {consume_query}
-                  bind:qhistory= {current_qhistory}
-                  bind:reset_graph_options= {reset_graph_options}
-                  bind:use_selected_as_root = {use_selected_as_root}
-                  bind:submit_query = {submit_query}
-                 
-                  />
-              </Pane>
-            {/each}
-          </Splitpanes>
-        </Pane>
-      </Splitpanes>
   </div>
-  
+  <div class="z-0 w-screen h-screen absolute">
+    <Splitpanes theme="my-theme" style="height: {100/panesNumber}%">
+      <Pane>
+        <Splitpanes theme="my-theme" horizontal="{true}">
+          {#each { length: panesNumber } as _, i}
+            <Pane class="pane" minSize={1}>
+              <svelte:component this = {SuperGraph}
+                on:selected_node_change={setSelectedNode}
+                on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
+                on:set_graph_element={setGraphElement}
+                on:pane_clicked={setGraphElement}
+                options={Options}
+                bind:this={newGraph}
+                bind:consume_query = {consume_query}
+                bind:qhistory= {current_qhistory}
+                bind:reset_graph_options= {reset_graph_options}
+                bind:use_selected_as_root = {use_selected_as_root}
+                bind:submit_query = {submit_query}
+               
+                />
+            </Pane>
+          {/each}
+        </Splitpanes>
+      </Pane>
+    </Splitpanes>
+  </div>
   <div class="flex flex-wrap content-center justify-center z-30 absolute w-screen h-screen pointer-events-none rounded-lg">
     <div class="pointer-events-auto rounded-lg w-3/6 max-w-screen-sm min-w-min h-2/6 relative overflow-y-auto"
       class:hidden={!show_settings}>
