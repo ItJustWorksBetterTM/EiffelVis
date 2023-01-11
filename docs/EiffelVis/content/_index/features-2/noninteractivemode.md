@@ -11,7 +11,6 @@ subtitle= "The graph is displayed in this mode on default. The mode can be disab
 
 [asset]
   image = "non-interactive.gif"
-  url = "https://g6.antv.vision/en"
   width = "100px"
   height = "50px"
 +++

@@ -11,7 +11,6 @@ subtitle= "The legend is a chart that will explain which of the Eiffelvis Events
 
 [asset]
   image = "Legend.gif"
-  url = "https://eiffel-community.github.io/"
   width = "150px"
   height = "100px"
 +++

@@ -11,7 +11,6 @@ subtitle= "Graph Options allows you to customise some aspects of the graph to be
 
 [asset]
   image = "graphOptions.gif"
-  url = "https://eiffel-community.github.io/"
   width = "150px"
   height = "100px"
 +++

@@ -11,7 +11,6 @@ subtitle= "The Timeline is another way to filter the graph but with time. By dra
 
 [asset]
   image = "timeline.gif"
-  url = "https://eiffel-community.github.io/"
   width = "150px"
   height = "100px"
 +++

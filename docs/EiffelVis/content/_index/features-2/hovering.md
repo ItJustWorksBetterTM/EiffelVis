@@ -11,7 +11,6 @@ subtitle= "By hovering over the nodes you can have a quick way of knowing the ti
 
 [asset]
   image = "Hover.gif"
-  url = "https://eiffel-community.github.io/"
   width = "150px"
   height = "100px"
 +++

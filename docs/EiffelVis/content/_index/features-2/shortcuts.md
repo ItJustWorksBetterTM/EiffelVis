@@ -11,7 +11,6 @@ subtitle= "Here you can find the key or combination of keys that allows you to i
 
 [asset]
   image = "shortcuts.gif"
-  url = "https://eiffel-community.github.io/"
   width = "150px"
   height = "100px"
 +++

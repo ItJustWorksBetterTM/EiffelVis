@@ -10,8 +10,7 @@ title = "Filter Panel"
 subtitle= "The Filter Options panel will allow you to filter the graph based on a few different options. Example: If your looking for a node/nodes of a particular type or host you can find them by entering name of the host/type and get a filtered graph with only the desired node/nodes displayed. "
 
 [asset]
-  image = "sample_graph.png"
-  url = "https://eiffel-community.github.io/"
+  image = "Coming-Soon.jpg"
   width = "150px"
   height = "100px"
 +++
