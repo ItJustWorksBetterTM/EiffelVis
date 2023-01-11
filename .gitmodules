@@ -7,6 +7,3 @@
 [submodule "docs/EiffelVis/themes/themes/syna"]
 	path = docs/EiffelVis/themes/themes/syna
 	url = https://git.okkur.org/syna
-[submodule "docs/EiffelVis/themess/syna"]
-	path = docs/EiffelVis/themess/syna
-	url = https://git.okkur.org/syna
