@@ -245,6 +245,7 @@ export let consume_query = async () => {
         ],
       },
     };
+    
     const paneClicked = () => {
       dispatch("pane_clicked", graph_elem);
     };

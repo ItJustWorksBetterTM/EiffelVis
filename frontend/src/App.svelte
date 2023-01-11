@@ -128,7 +128,7 @@ $: {
   
   const setCurrentGraph = (graph: any) =>{
     current_graph = graph;
-   
+    console.log(current_graph);
   };
 
 let reset_graph_options: () => void;
@@ -136,16 +136,16 @@ let use_selected_as_root: () => void;
 let Options: any;
 let splitView = true; 
 let newGraph: SuperGraph; 
-  $:panesNumber = 1;
+  $:panesNumber = 2;
   $:newGraph; 
  
-    $: addNewGraph = () => {
+    $: addNewGraph = async () => {
         if (panesNumber >= 0) panesNumber++;
          newGraph = new SuperGraph(Options); 
       }
 
     $: removeNewGraph = () => {
-        if (panesNumber >= 0) panesNumber--;
+        if (panesNumber > 1) panesNumber--;
       }
 
 </script>
@@ -164,6 +164,10 @@ let newGraph: SuperGraph;
       toggleFilterPanelPlaceholder = {toggleFilterPanel}
       updateTimeBarPlaceholder = {updateTimebar}
       toggleInteractiveModePlaceholder = {toggleInteractiveMode}
+      addNewGraphPlaceholder = {addNewGraph}
+      removeGraphPlaceholder = {removeNewGraph}
+      splitView = {splitView}
+      panesNumber = {panesNumber}
 
     />
   </div>
@@ -184,32 +188,17 @@ let newGraph: SuperGraph;
       />
     </div>
     <div>
-      <SvgButton
-        onClickAction= {addNewGraph}
-        btnState= {splitView}
-        data = "M3 3h18v18H3zM12 8v8m-4-4h8"
-      />
-    <button
-      disabled={panesNumber <= 0}
-      on:click= {removeNewGraph}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" 
-        viewBox="0 0 24 24" fill="none" 
-        stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 3h18v18H3zM8 12h8"/></svg>
-    </button>
+
   </div>
   <div class="z-0 w-screen h-screen absolute">
-    <Splitpanes theme="my-theme" style="height: {100/panesNumber}%">
+    <Splitpanes theme="my-theme" style="height: 100%">
       <Pane>
         <Splitpanes theme="my-theme" horizontal="{true}">
           {#each { length: panesNumber } as _, i}
             <Pane class="pane" minSize={1}>
               <svelte:component this = {SuperGraph}
                 on:selected_node_change={setSelectedNode}
-                on:pane_clicked={() => {setGraphElement; setCurrentGraph(graph_two)} }
-                on:set_graph_element={setGraphElement}
-                on:pane_clicked={setGraphElement}
+                on:pane_clicked={() => {setCurrentGraph(newGraph)} }
                 options={Options}
                 bind:this={newGraph}
                 bind:consume_query = {consume_query}
@@ -217,7 +206,6 @@ let newGraph: SuperGraph;
                 bind:reset_graph_options= {reset_graph_options}
                 bind:use_selected_as_root = {use_selected_as_root}
                 bind:submit_query = {submit_query}
-               
                 />
             </Pane>
           {/each}
@@ -262,9 +250,7 @@ let newGraph: SuperGraph;
 
 
   .splitpanes.my-theme {
-  .splitpanes__pane {
-      background-color: #fffff;
-  }
+ 
   .{
     border-color: aliceblue;
     border-radius: 2em;
