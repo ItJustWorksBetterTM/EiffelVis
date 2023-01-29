@@ -204,7 +204,7 @@ export let consume_query = async () => {
         consume_query();
       }; 
   
-    export const options = {
+    const options = {
       width: 400,
       height: 400,
       workerEnabled: false,

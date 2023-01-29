@@ -7,45 +7,41 @@
   export let show_timebar: boolean;
   export let interactiveMode: boolean;
   export let show_filter_panel: boolean;
-  export let splitView: boolean;
-  export let panesNumber: number;
+  export let splitViewMode: boolean;
+  export let removePaneBtnState:boolean;
+
 
   export let updateTimeBarPlaceholder: () => void; //it was called directly inside the div element, now: a method is created inside app.svelt
   export let toggleSettingsPlaceholder: () => void;
   export let toggleLegendPlaceholder: () => void;
   export let toggleInteractiveModePlaceholder: () => void;
   export let toggleFilterPanelPlaceholder: () => void;
-  export let addNewGraphPlaceholder: () => void;
+  export let addNewGraphPlaceholder: () => Promise<void> ; 
   export let removeGraphPlaceholder: () => void;
+
+ 
 </script>
 
 <div class="flex h-screen">
   <ul
     class="menu grid justify-items-center content-end py-3  h-screen shadow-large bg-base-300"
   >
+  <!-- Buttons interracting with splitPanes  -->
+
     <li>
       <SvgButton
         onClickAction={addNewGraphPlaceholder}
-        btnState={splitView}
-        data="M3 3h18v18H3zM12 8v8m-4-4h8"
+        btnState={splitViewMode}
+        data="M2, 12 a 10,10 0 1, 0 20, 0 a 10,10 0 1,0 -20, 0 M 12 8 12 16 M 8 12 16 12"
       />
-      <button disabled={panesNumber <= 0} on:click={removeGraphPlaceholder}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="23"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#ffffff"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M3 3h18v18H3zM8 12h8" /></svg
-        >
-      </button>
     </li>
-    <!-- Buttons interracting with panels -->
+    <li>
+      <SvgButton 
+        onClickAction={removeGraphPlaceholder}
+        btnState = {removePaneBtnState}
+        data="M2, 12 a 10,10 0 1, 0 20, 0 a 10,10 0 1,0 -20, 0 M 8 12 16 12"
+        />
+    </li>  
     <li>
       <SvgButton
         onClickAction={toggleLegendPlaceholder}
@@ -54,7 +50,6 @@
                      2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
       />
     </li>
-
     <li>
       <SvgButton
         onClickAction={toggleFilterPanelPlaceholder}
@@ -92,4 +87,13 @@
       />
     </li>
   </ul>
+
+
+  <!-- Useful sources for generating svgs: 
+    1.   https://iconsvg.xyz/
+    2.   https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+    3.   https://www.smashingmagazine.com/2019/03/svg-circle-decomposition-paths/
+    4.   https://design-system.w3.org/styles/svg-icons.html
+  
+  -->
 </div>

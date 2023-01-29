@@ -15,16 +15,10 @@
   import Settings from "./components/settings/Settings.svelte";
   import { Pane, Splitpanes } from "svelte-splitpanes";
   import SuperGraph from "./components/SuperGraph.svelte";
-  import { tick } from "svelte";
-  import SvgButton from "./components/SvgButton.svelte";
-  import G6 from "@antv/g6";
 
   let current_graph: SuperGraph = null;
-  let graph_one: SuperGraph = null;
-  let graph_two: SuperGraph = null;
 
   let graph_elem: G6Graph = null;
-  let active_stream: QueryStream = null;
   let awaiting_query_request: boolean = false;
 
   let selected_node: FullEvent = null;
@@ -41,10 +35,7 @@
   let legend: Map<string, any> = themeMap;
   $: styles = [...legend.entries()];
 
-  //let query_cache: { stream: QueryStream; query: FixedQuery }[] = [];
-
   let current_qhistory: FixedQuery[] = [];
-
   let current_query: FixedQuery = {
     range_filter: { begin: { type: "Absolute", val: -500 }, end: null },
     event_filters: [empty_fixed_event_filters()],
@@ -108,12 +99,6 @@ $: {
             (nonInteractiveState = !nonInteractiveState)
   };
 
- const  handle_close_request = () => {
-    console.log('received in app')
-    show_settings = !show_settings
- }
-
-
   // Sets the selected node (Doesn't know what graph it's from)
   const setSelectedNode = (e: any) => {
     selected_node = e.detail;
@@ -133,20 +118,45 @@ $: {
 
 let reset_graph_options: () => void;
 let use_selected_as_root: () => void;
-let Options: any;
-let splitView = true; 
+let splitViewMode:boolean= false; 
+let enableRemovePaneBtn:boolean = false; 
 let newGraph: SuperGraph; 
-  $:panesNumber = 2;
-  $:newGraph; 
- 
-    $: addNewGraph = async () => {
-        if (panesNumber >= 0) panesNumber++;
-         newGraph = new SuperGraph(Options); 
-      }
+let panesNumber:number = 1; 
 
-    $: removeNewGraph = () => {
-        if (panesNumber > 1) panesNumber--;
-      }
+let new_graph_options:Svelte2TsxComponentConstructorParameters<{
+    qhistory?: FixedQuery[];
+    consume_query?: () => Promise<void>;
+    submit_query?: (fquery: FixedQuery) => void;
+    use_selected_as_root?: () => void;
+    reset_graph_options?: () => void;
+    getQhistory?: () => any;
+}>;
+$: panesNumber;
+$: splitViewMode;
+
+$: if (panesNumber <= 1){
+  splitViewMode = false;
+}
+
+  
+ 
+$: addNewGraph = async () => {
+    if (panesNumber >= 0){
+          panesNumber++;
+          splitViewMode =true;
+        } 
+        newGraph = new SuperGraph(new_graph_options); 
+   }
+
+ $: removeNewGraph = () => {
+    if (panesNumber > 1) {
+          panesNumber--;
+
+    }else{
+          enableRemovePaneBtn =false;
+          splitViewMode =false;
+        }
+    }
 
 </script>
 
@@ -164,10 +174,10 @@ let newGraph: SuperGraph;
       toggleFilterPanelPlaceholder = {toggleFilterPanel}
       updateTimeBarPlaceholder = {updateTimebar}
       toggleInteractiveModePlaceholder = {toggleInteractiveMode}
-      addNewGraphPlaceholder = {addNewGraph}
-      removeGraphPlaceholder = {removeNewGraph}
-      splitView = {splitView}
-      panesNumber = {panesNumber}
+      bind:addNewGraphPlaceholder = {addNewGraph}
+      bind:removeGraphPlaceholder = {removeNewGraph}
+      bind:splitViewMode = {splitViewMode}
+      bind:removePaneBtnState = {enableRemovePaneBtn}
 
     />
   </div>
@@ -199,14 +209,12 @@ let newGraph: SuperGraph;
               <svelte:component this = {SuperGraph}
                 on:selected_node_change={setSelectedNode}
                 on:pane_clicked={() => {setCurrentGraph(newGraph)} }
-                options={Options}
                 bind:this={newGraph}
-                bind:consume_query = {consume_query}
                 bind:qhistory= {current_qhistory}
                 bind:reset_graph_options= {reset_graph_options}
                 bind:use_selected_as_root = {use_selected_as_root}
                 bind:submit_query = {submit_query}
-                />
+              />
             </Pane>
           {/each}
         </Splitpanes>
